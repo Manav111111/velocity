@@ -2,10 +2,12 @@
   "expo": {
     "name": "velocity",
     "slug": "velocity",
+    "scheme": "velocity",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "backgroundColor": "#ffffff",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -20,10 +22,19 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.manav111.velocity"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e34530f9-9617-4dc4-9202-0d346d7b3bf2"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
