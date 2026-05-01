@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "845684833636",
+    "project_id": "velocity-pro",
+    "storage_bucket": "velocity-pro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845684833636:android:775c17e3ff396636f6ce71",
+        "android_client_info": {
+          "package_name": "com.manav111.velocity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "845684833636-098brfo0sgld9a4f2ed54r9bfvr79t93.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.manav111.velocity",
+            "certificate_hash": "b09761f601566f01453970b6e68a43b96cfe8caa"
+          }
+        },
+        {
+          "client_id": "845684833636-81vubcogas8pku4vvno70cs0rm4bh21s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDffabO4yD8MuKcg0vU94ccEWocxnyA4yk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "845684833636-81vubcogas8pku4vvno70cs0rm4bh21s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
