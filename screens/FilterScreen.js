@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  Switch, Platform, TextInput,
+  Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
@@ -46,7 +46,7 @@ export default function FilterScreen({ navigation, route }) {
       maxPrice: maxPrice < globalMax ? maxPrice : undefined,
       inStockOnly: inStockOnly || undefined,
     };
-    navigation.navigate('SearchTab', { filters });
+    navigation.navigate('Home', { screen: 'SearchTab', params: { filters } });
   };
 
   const activeFilterCount = [
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingTop: Platform.OS === 'android' ? 50 : 20, paddingBottom: 18,
+    paddingHorizontal: 20, paddingTop: 18, paddingBottom: 18,
     borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
   },
   supertext: { fontSize: 9, fontWeight: 'bold', color: '#8b5cf6', letterSpacing: 2, marginBottom: 4 },

@@ -1,10 +1,8 @@
 import React, { memo } from 'react';
 import {
-  StyleSheet, View, Text, Image, TouchableOpacity, ScrollView, Dimensions,
+  StyleSheet, View, Text, Image, TouchableOpacity, ScrollView, useWindowDimensions,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
 
 /**
  * CategoryGrid — displays categories in horizontal scroll or grid.
@@ -15,6 +13,7 @@ const { width } = Dimensions.get('window');
  * @param {number} [props.columns=3] — columns for grid variant
  */
 function CategoryGrid({ categories = [], onCategoryPress, variant = 'horizontal', columns = 3 }) {
+  const { width } = useWindowDimensions();
   if (categories.length === 0) return null;
 
   if (variant === 'horizontal') {
@@ -39,7 +38,7 @@ function CategoryGrid({ categories = [], onCategoryPress, variant = 'horizontal'
               )}
             </View>
             <Text style={styles.horizontalLabel} numberOfLines={1}>
-              {(cat.name || '').length > 8 ? cat.name.slice(0, 8) + '…' : cat.name}
+              {cat.name}
             </Text>
           </TouchableOpacity>
         ))}
@@ -48,7 +47,7 @@ function CategoryGrid({ categories = [], onCategoryPress, variant = 'horizontal'
   }
 
   // Grid variant
-  const cardW = (width - 32 - (columns - 1) * 10) / columns;
+  const cardW = (Math.max(width, 320) - 32 - (columns - 1) * 10) / columns;
 
   return (
     <View style={styles.gridContainer}>

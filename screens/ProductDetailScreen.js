@@ -73,7 +73,7 @@ export default function ProductDetailScreen({ navigation, route }) {
             </TouchableOpacity>
             <Text style={styles.headerBrand}>Velocity</Text>
           </View>
-          <TouchableOpacity style={styles.headerRight} onPress={() => navigation.navigate('CartTab')}>
+          <TouchableOpacity style={styles.headerRight} onPress={() => navigation.navigate('Home', { screen: 'CartTab' })}>
             <MaterialIcons name="shopping-cart" size={18} color="#8b5cf6" />
             {cartItemCount > 0 && (
               <View style={styles.headerCartBadge}>
@@ -238,7 +238,7 @@ export default function ProductDetailScreen({ navigation, route }) {
               <MaterialIcons name="add-shopping-cart" size={18} color="#8b5cf6" />
               <Text style={styles.addMoreText}>Add {qty} More</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.goToCartBtn} onPress={() => navigation.navigate('CartTab')}>
+            <TouchableOpacity style={styles.goToCartBtn} onPress={() => navigation.navigate('Home', { screen: 'CartTab' })}>
               <MaterialIcons name="shopping-cart" size={18} color="#ffffff" />
               <Text style={styles.goToCartText}>Go to Cart</Text>
             </TouchableOpacity>

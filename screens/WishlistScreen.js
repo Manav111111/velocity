@@ -1,7 +1,8 @@
 import React from 'react';
 import {
-  StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions, Image, Platform
+  StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions, Image
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
@@ -12,14 +13,14 @@ export default function WishlistScreen({ navigation }) {
   const { wishlistItems, addToCart, toggleWishlist } = useAppContext();
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
             <MaterialIcons name="arrow-back" size={22} color="#1e293b" />
           </TouchableOpacity>
-          <Text style={styles.headerBrand}>Velocity<Text style={{ color: '#8b5cf6' }}>Pro</Text></Text>
+          <Text style={styles.headerBrand}>Velocity</Text>
           <TouchableOpacity style={styles.avatarBtn}>
             <MaterialIcons name="notifications-none" size={20} color="#8b5cf6" />
           </TouchableOpacity>
@@ -83,7 +84,7 @@ export default function WishlistScreen({ navigation }) {
           </View>
         ))}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fafafa' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingTop: Platform.OS === 'android' ? 50 : 20, paddingBottom: 12,
+    paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12,
   },
   backBtn: {
     width: 38, height: 38, borderRadius: 19,

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  Dimensions, Alert, TextInput, Modal, ActivityIndicator, Platform,
+  Dimensions, Alert, TextInput, Modal, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { signOut, updateProfile } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
@@ -95,7 +96,7 @@ export default function ProfileScreen({ navigation }) {
       label: 'My Cart',
       sub: `${cartItemCount} item${cartItemCount !== 1 ? 's' : ''} in cart`,
       badge: cartItemCount,
-      onPress: () => navigation.navigate('CartTab'),
+      onPress: () => navigation.navigate('Home', { screen: 'CartTab' }),
       color: '#4caf50',
     },
     {
@@ -108,7 +109,7 @@ export default function ProfileScreen({ navigation }) {
   ];
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
         <View style={styles.header}>
@@ -269,7 +270,7 @@ export default function ProfileScreen({ navigation }) {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fafafa' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingTop: Platform.OS === 'android' ? 50 : 50, paddingBottom: 12,
+    paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   headerBrand: { fontSize: 16, fontWeight: '800', color: '#1e293b' },

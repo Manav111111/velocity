@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions,
-  ActivityIndicator, Platform,
+  ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAppContext } from '../context/AppContext';
 
@@ -44,7 +45,7 @@ export default function OrdersScreen({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header */}
         <View style={styles.header}>
@@ -57,7 +58,7 @@ export default function OrdersScreen({ navigation }) {
           </View>
           <TouchableOpacity
             style={styles.avatarBtn}
-            onPress={() => navigation.navigate('ProfileTab')}
+            onPress={() => navigation.navigate('Home', { screen: 'ProfileTab' })}
           >
             <MaterialIcons name="person" size={20} color="#8b5cf6" />
           </TouchableOpacity>
@@ -125,7 +126,7 @@ export default function OrdersScreen({ navigation }) {
             <MaterialIcons name="receipt-long" size={60} color="#40485d" />
             <Text style={styles.emptyTitle}>No Orders Yet</Text>
             <Text style={styles.emptySubtitle}>Your order history will appear here</Text>
-            <TouchableOpacity style={styles.shopBtn} onPress={() => navigation.navigate('HomeTab')}>
+            <TouchableOpacity style={styles.shopBtn} onPress={() => navigation.navigate('Home', { screen: 'HomeTab' })}>
               <Text style={styles.shopBtnText}>Start Shopping</Text>
             </TouchableOpacity>
           </View>
@@ -195,7 +196,7 @@ export default function OrdersScreen({ navigation }) {
           })
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fafafa' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingTop: Platform.OS === 'android' ? 50 : 50, paddingBottom: 12,
+    paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   headerBrand: { fontSize: 16, fontWeight: '800', color: '#1e293b' },

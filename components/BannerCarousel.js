@@ -1,19 +1,20 @@
 import React, { useRef, useState, useEffect, useCallback, memo } from 'react';
 import {
-  StyleSheet, View, Text, Image, FlatList, Dimensions,
+  StyleSheet, View, Text, Image, FlatList, useWindowDimensions,
   TouchableOpacity,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
-const BANNER_WIDTH = width - 32;
-const BANNER_HEIGHT = 200;
 const AUTO_SLIDE_INTERVAL = 4000;
 
 function BannerCarousel({ banners = [], onBannerPress }) {
   const flatListRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const timerRef = useRef(null);
+  const { width } = useWindowDimensions();
+  const pageWidth = Math.max(width, 320);
+  const bannerWidth = pageWidth - 32;
+  const bannerHeight = Math.min(210, Math.max(156, bannerWidth * 0.48));
 
   // Sort by priority (lower = higher priority)
   const sortedBanners = [...banners].sort((a, b) => (a.priority || 99) - (b.priority || 99));
@@ -23,11 +24,11 @@ function BannerCarousel({ banners = [], onBannerPress }) {
     timerRef.current = setInterval(() => {
       setActiveIndex((prev) => {
         const next = (prev + 1) % sortedBanners.length;
-        flatListRef.current?.scrollToOffset({ offset: next * BANNER_WIDTH, animated: true });
+        flatListRef.current?.scrollToOffset({ offset: next * pageWidth, animated: true });
         return next;
       });
     }, AUTO_SLIDE_INTERVAL);
-  }, [sortedBanners.length]);
+  }, [pageWidth, sortedBanners.length]);
 
   useEffect(() => {
     startAutoSlide();
@@ -35,8 +36,8 @@ function BannerCarousel({ banners = [], onBannerPress }) {
   }, [startAutoSlide]);
 
   const onScrollEnd = (e) => {
-    const idx = Math.round(e.nativeEvent.contentOffset.x / BANNER_WIDTH);
-    setActiveIndex(idx);
+    const idx = Math.round(e.nativeEvent.contentOffset.x / pageWidth);
+    setActiveIndex(Math.max(0, Math.min(idx, sortedBanners.length - 1)));
     // Reset auto-slide timer on manual swipe
     clearInterval(timerRef.current);
     startAutoSlide();
@@ -52,33 +53,34 @@ function BannerCarousel({ banners = [], onBannerPress }) {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        snapToInterval={BANNER_WIDTH}
+        snapToInterval={pageWidth}
         decelerationRate="fast"
         keyExtractor={(item) => item.id}
         onMomentumScrollEnd={onScrollEnd}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.bannerCard}
+            style={[styles.bannerPage, { width: pageWidth }]}
             activeOpacity={0.9}
             onPress={() => onBannerPress?.(item)}
           >
-            {item.imageUrl ? (
-              <Image source={{ uri: item.imageUrl }} style={styles.bannerImage} resizeMode="cover" />
-            ) : (
-              <View style={[styles.bannerImage, styles.bannerPlaceholder]}>
-                <View style={styles.placeholderPattern}>
-                  <MaterialIcons name="local-offer" size={60} color="rgba(139,92,246,0.15)" />
+            <View style={[styles.bannerCard, { width: bannerWidth, height: bannerHeight }]}>
+              {item.imageUrl ? (
+                <Image source={{ uri: item.imageUrl }} style={styles.bannerImage} resizeMode="cover" />
+              ) : (
+                <View style={[styles.bannerImage, styles.bannerPlaceholder]}>
+                  <View style={styles.placeholderPattern}>
+                    <MaterialIcons name="local-offer" size={60} color="rgba(139,92,246,0.15)" />
+                  </View>
                 </View>
+              )}
+              <View style={styles.bannerOverlay}>
+                <View style={styles.bannerBadge}>
+                  <MaterialIcons name="bolt" size={10} color="#ffffff" />
+                  <Text style={styles.bannerBadgeText}>EXCLUSIVE DEAL</Text>
+                </View>
+                <Text style={styles.bannerTitle} numberOfLines={1}>{item.title || 'Special Offer'}</Text>
+                <Text style={styles.bannerSubtitle} numberOfLines={1}>{item.subtitle || 'Check out our latest deals'}</Text>
               </View>
-            )}
-            <View style={styles.bannerOverlay}>
-              <View style={styles.bannerBadge}>
-                <MaterialIcons name="bolt" size={10} color="#ffffff" />
-                <Text style={styles.bannerBadgeText}>EXCLUSIVE DEAL</Text>
-              </View>
-              <Text style={styles.bannerTitle} numberOfLines={1}>{item.title || 'Special Offer'}</Text>
-              <Text style={styles.bannerSubtitle} numberOfLines={1}>{item.subtitle || 'Check out our latest deals'}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -102,9 +104,10 @@ export default memo(BannerCarousel);
 
 const styles = StyleSheet.create({
   container: { marginBottom: 20 },
+  bannerPage: {
+    paddingHorizontal: 16,
+  },
   bannerCard: {
-    width: BANNER_WIDTH,
-    height: BANNER_HEIGHT,
     borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: '#f1f5f9',

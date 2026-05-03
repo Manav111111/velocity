@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  Dimensions, FlatList,
+  FlatList,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -11,8 +11,6 @@ import BannerCarousel from '../components/BannerCarousel';
 import CategoryGrid from '../components/CategoryGrid';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
-
-const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
   const {
@@ -124,7 +122,6 @@ export default function HomeScreen({ navigation }) {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
-              <View style={styles.bannerOrb} />
               <View style={{ flex: 1, zIndex: 1 }}>
                 <View style={styles.promoBadge}>
                   <Text style={styles.promoBadgeText}>LIMITED TIME</Text>
@@ -138,7 +135,9 @@ export default function HomeScreen({ navigation }) {
                   <MaterialIcons name="arrow-forward" size={12} color="#7C3AED" />
                 </View>
               </View>
-              <Text style={styles.bannerEmoji}>🍎</Text>
+              <View style={styles.bannerIconWrap}>
+                <MaterialIcons name="local-florist" size={54} color="#ffffff" />
+              </View>
             </LinearGradient>
           </TouchableOpacity>
         )}
@@ -340,12 +339,8 @@ const styles = StyleSheet.create({
 
   // Promo banner (fallback when no CMS banners)
   promoBanner: {
-    borderRadius: 20, padding: 22, flexDirection: 'row',
+    minHeight: 166, borderRadius: 18, padding: 20, flexDirection: 'row',
     alignItems: 'center', overflow: 'hidden',
-  },
-  bannerOrb: {
-    position: 'absolute', width: 140, height: 140, borderRadius: 70,
-    backgroundColor: 'rgba(167,139,250,0.15)', right: -20, top: -30,
   },
   promoBadge: {
     backgroundColor: 'rgba(52,211,153,0.18)', borderWidth: 1,
@@ -362,7 +357,12 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   promoCtaText: { fontSize: 12, fontWeight: '700', color: '#7C3AED' },
-  bannerEmoji: { fontSize: 60, position: 'relative', zIndex: 1 },
+  bannerIconWrap: {
+    width: 92, height: 92, borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)',
+  },
 
   // Sections
   sectionHeader: {

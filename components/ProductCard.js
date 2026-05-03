@@ -1,10 +1,8 @@
 import React, { memo } from 'react';
 import {
-  StyleSheet, View, Text, Image, TouchableOpacity, Dimensions,
+  StyleSheet, View, Text, Image, TouchableOpacity, useWindowDimensions,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
 
 /**
  * ProductCard — reusable product display component.
@@ -22,6 +20,7 @@ function ProductCard({
   product, variant = 'horizontal', onPress, onAddToCart,
   onToggleWishlist, isInWishlist = false, cartQty = 0, onUpdateQty,
 }) {
+  const { width } = useWindowDimensions();
   const imageUri = product.images?.[0] || product.image;
   const hasDiscount = product.discount > 0;
   const discountedPrice = hasDiscount
@@ -35,7 +34,7 @@ function ProductCard({
         <Image
           source={{ uri: imageUri }}
           style={style}
-          resizeMode="cover"
+          resizeMode="contain"
         />
       );
     }
@@ -91,7 +90,7 @@ function ProductCard({
   };
 
   if (variant === 'grid') {
-    const cardW = (width - 54) / 2;
+    const cardW = (Math.max(width, 320) - 42) / 2;
     return (
       <TouchableOpacity
         style={[styles.gridCard, { width: cardW }]}
@@ -218,6 +217,7 @@ const styles = StyleSheet.create({
   horizontalImage: {
     width: '100%',
     height: 120,
+    backgroundColor: '#f8fafc',
   },
   horizontalContent: {
     padding: 10,
@@ -270,6 +270,7 @@ const styles = StyleSheet.create({
   gridImage: {
     width: '100%',
     height: 120,
+    backgroundColor: '#f8fafc',
   },
   gridContent: {
     padding: 10,
@@ -310,6 +311,9 @@ const styles = StyleSheet.create({
   priceGroup: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    marginRight: 6,
   },
 
   // === Shared ===
