@@ -14,7 +14,7 @@ function BannerCarousel({ banners = [], onBannerPress }) {
   const { width } = useWindowDimensions();
   const pageWidth = Math.max(width, 320);
   const bannerWidth = pageWidth - 32;
-  const bannerHeight = Math.min(210, Math.max(156, bannerWidth * 0.48));
+  const bannerHeight = Math.min(198, Math.max(150, bannerWidth * 0.46));
 
   // Sort by priority (lower = higher priority)
   const sortedBanners = [...banners].sort((a, b) => (a.priority || 99) - (b.priority || 99));
@@ -69,14 +69,14 @@ function BannerCarousel({ banners = [], onBannerPress }) {
               ) : (
                 <View style={[styles.bannerImage, styles.bannerPlaceholder]}>
                   <View style={styles.placeholderPattern}>
-                    <MaterialIcons name="local-offer" size={60} color="rgba(139,92,246,0.15)" />
+                  <MaterialIcons name="local-offer" size={56} color="rgba(22,128,60,0.18)" />
                   </View>
                 </View>
               )}
               <View style={styles.bannerOverlay}>
                 <View style={styles.bannerBadge}>
                   <MaterialIcons name="bolt" size={10} color="#ffffff" />
-                  <Text style={styles.bannerBadgeText}>EXCLUSIVE DEAL</Text>
+                  <Text style={styles.bannerBadgeText}>FRESH DEAL</Text>
                 </View>
                 <Text style={styles.bannerTitle} numberOfLines={1}>{item.title || 'Special Offer'}</Text>
                 <Text style={styles.bannerSubtitle} numberOfLines={1}>{item.subtitle || 'Check out our latest deals'}</Text>
@@ -108,13 +108,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   bannerCard: {
-    borderRadius: 16,
+    borderRadius: 12,
     overflow: 'hidden',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#F0F7EA',
+    borderWidth: 1,
+    borderColor: '#D9EBCF',
   },
   bannerImage: { width: '100%', height: '100%' },
   bannerPlaceholder: {
-    backgroundColor: '#f5f3ff',
+    backgroundColor: '#ECFDF5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -126,13 +128,13 @@ const styles = StyleSheet.create({
     position: 'absolute', bottom: 0, left: 0, right: 0,
     padding: 16,
     paddingTop: 30,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'rgba(17,24,39,0.38)',
   },
   bannerBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: '#16803C',
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -151,6 +153,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#e2e8f0',
   },
   dotActive: {
-    width: 20, backgroundColor: '#8b5cf6', borderRadius: 4,
+    width: 20, backgroundColor: '#16803C', borderRadius: 4,
   },
 });

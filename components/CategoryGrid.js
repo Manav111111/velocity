@@ -1,17 +1,36 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import {
   StyleSheet, View, Text, Image, TouchableOpacity, ScrollView, useWindowDimensions,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { getCategoryFallbackSource, getCategoryImageSource } from '../utils/categoryMedia';
 
 /**
- * CategoryGrid — displays categories in horizontal scroll or grid.
+ * CategoryGrid displays categories in horizontal scroll or grid.
  * @param {Object} props
  * @param {'horizontal'|'grid'} props.variant
  * @param {Array} props.categories
  * @param {Function} props.onCategoryPress
- * @param {number} [props.columns=3] — columns for grid variant
+ * @param {number} [props.columns=3] columns for grid variant
  */
+function tintColor(color) {
+  return typeof color === 'string' && color.startsWith('#') ? `${color}15` : '#ECFDF5';
+}
+
+function CategoryImage({ cat, style }) {
+  const [failed, setFailed] = useState(false);
+  const source = failed ? getCategoryFallbackSource(cat) : getCategoryImageSource(cat);
+
+  return (
+    <Image
+      source={source}
+      style={style}
+      resizeMode="contain"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 function CategoryGrid({ categories = [], onCategoryPress, variant = 'horizontal', columns = 3 }) {
   const { width } = useWindowDimensions();
   if (categories.length === 0) return null;
@@ -30,12 +49,11 @@ function CategoryGrid({ categories = [], onCategoryPress, variant = 'horizontal'
             onPress={() => onCategoryPress?.(cat)}
             activeOpacity={0.75}
           >
-            <View style={[styles.horizontalIcon, { backgroundColor: cat.color ? cat.color + '15' : '#f5f3ff' }]}>
-              {cat.imageUrl ? (
-                <Image source={{ uri: cat.imageUrl }} style={styles.horizontalImage} resizeMode="cover" />
-              ) : (
-                <MaterialIcons name={cat.resolvedIcon || 'category'} size={26} color="#8b5cf6" />
-              )}
+            <View style={[styles.horizontalIcon, { backgroundColor: tintColor(cat.color) }]}>
+              <CategoryImage
+                cat={cat}
+                style={styles.horizontalImage}
+              />
             </View>
             <Text style={styles.horizontalLabel} numberOfLines={1}>
               {cat.name}
@@ -58,12 +76,11 @@ function CategoryGrid({ categories = [], onCategoryPress, variant = 'horizontal'
           onPress={() => onCategoryPress?.(cat)}
           activeOpacity={0.8}
         >
-          <View style={[styles.gridImageBox, { backgroundColor: cat.color || '#f5f3ff' }]}>
-            {cat.imageUrl ? (
-              <Image source={{ uri: cat.imageUrl }} style={styles.gridImage} resizeMode="cover" />
-            ) : (
-              <MaterialIcons name={cat.resolvedIcon || 'category'} size={32} color="rgba(255,255,255,0.3)" />
-            )}
+          <View style={[styles.gridImageBox, { backgroundColor: tintColor(cat.color) }]}>
+            <CategoryImage
+              cat={cat}
+              style={styles.gridImage}
+            />
             {cat.productCount > 0 && (
               <View style={styles.countBadge}>
                 <Text style={styles.countBadgeText}>{cat.productCount}</Text>
@@ -72,7 +89,7 @@ function CategoryGrid({ categories = [], onCategoryPress, variant = 'horizontal'
           </View>
           <Text style={styles.gridName} numberOfLines={1}>{cat.name}</Text>
           <View style={styles.gridArrow}>
-            <MaterialIcons name="arrow-forward" size={12} color="#8b5cf6" />
+            <MaterialIcons name="arrow-forward" size={12} color="#16803C" />
           </View>
         </TouchableOpacity>
       ))}
@@ -87,18 +104,18 @@ const styles = StyleSheet.create({
   horizontalContainer: { paddingHorizontal: 16, gap: 14, paddingBottom: 4 },
   horizontalItem: { alignItems: 'center', gap: 6 },
   horizontalIcon: {
-    width: 60, height: 60, borderRadius: 18,
+    width: 62, height: 62, borderRadius: 12,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: 'rgba(139,92,246,0.08)',
+    borderWidth: 1, borderColor: 'rgba(22,128,60,0.08)',
   },
-  horizontalImage: { width: 40, height: 40, borderRadius: 12 },
-  horizontalLabel: { fontSize: 11, fontWeight: '600', color: '#475569', letterSpacing: 0.2 },
+  horizontalImage: { width: 54, height: 54, borderRadius: 10 },
+  horizontalLabel: { fontSize: 11, fontWeight: '700', color: '#334155', letterSpacing: 0 },
 
   // Grid variant
   gridContainer: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 10 },
   gridCard: {
-    backgroundColor: '#ffffff', borderRadius: 16, padding: 10,
-    alignItems: 'center', borderWidth: 1, borderColor: '#f1f5f9',
+    backgroundColor: '#ffffff', borderRadius: 10, padding: 10,
+    alignItems: 'center', borderWidth: 1, borderColor: '#E5ECDC',
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03, shadowRadius: 6, elevation: 2,
   },
@@ -107,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', marginBottom: 8,
     position: 'relative', overflow: 'hidden',
   },
-  gridImage: { width: '100%', height: '100%', borderRadius: 12 },
+  gridImage: { width: '90%', height: '90%', borderRadius: 12 },
   countBadge: {
     position: 'absolute', top: 6, right: 6,
     backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: 8,
@@ -117,7 +134,7 @@ const styles = StyleSheet.create({
   gridName: { fontSize: 12, fontWeight: '600', color: '#1e293b', textAlign: 'center', marginBottom: 4 },
   gridArrow: {
     width: 22, height: 22, borderRadius: 7,
-    backgroundColor: '#f5f3ff',
+    backgroundColor: '#ECFDF5',
     alignItems: 'center', justifyContent: 'center',
   },
 });

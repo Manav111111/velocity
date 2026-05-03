@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  Platform, ActivityIndicator, Alert, TextInput,
+  ActivityIndicator, Alert, TextInput,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAppContext } from '../context/AppContext';
 
@@ -12,6 +12,8 @@ export default function CheckoutScreen({ navigation, route }) {
     user, location, address, cartItems, cartTotal, cartItemCount,
     placeOrder, savedAddresses,
   } = useAppContext();
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 0);
 
   const instructions = route.params?.instructions || '';
   const [placing, setPlacing] = useState(false);
@@ -80,7 +82,7 @@ export default function CheckoutScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 118 + bottomInset }}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
@@ -194,7 +196,7 @@ export default function CheckoutScreen({ navigation, route }) {
       </ScrollView>
 
       {/* Place Order Button */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { paddingBottom: Math.max(bottomInset, 14) }]}>
         <View style={styles.bottomInfo}>
           <Text style={styles.bottomLabel}>Total Amount</Text>
           <Text style={styles.bottomTotal}>₹{total}</Text>
@@ -317,7 +319,7 @@ const styles = StyleSheet.create({
   // Bottom bar
   bottomBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: '#ffffff', paddingHorizontal: 20, paddingVertical: 14,
+    backgroundColor: '#ffffff', paddingHorizontal: 20, paddingTop: 14,
     borderTopWidth: 1, borderTopColor: '#e2e8f0',
     flexDirection: 'row', alignItems: 'center', gap: 14,
   },

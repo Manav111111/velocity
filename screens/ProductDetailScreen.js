@@ -1,9 +1,9 @@
 import React, { useState, useRef, useCallback } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  Dimensions, Platform, Image, FlatList,
+  Dimensions, Image, FlatList,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAppContext } from '../context/AppContext';
 
@@ -18,6 +18,8 @@ export default function ProductDetailScreen({ navigation, route }) {
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 0);
 
   const product = route.params?.product || {
     id: 'p1', name: 'Product', price: 0, category: 'General',
@@ -64,7 +66,7 @@ export default function ProductDetailScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 + bottomInset }}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -231,7 +233,7 @@ export default function ProductDetailScreen({ navigation, route }) {
       </ScrollView>
 
       {/* Sticky Bottom */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { paddingBottom: Math.max(bottomInset, 14) }]}>
         {justAdded || inCartQty > 0 ? (
           <View style={styles.bottomRow}>
             <TouchableOpacity style={styles.addMoreBtn} onPress={handleAddToCart} disabled={isOutOfStock}>
@@ -376,7 +378,7 @@ const styles = StyleSheet.create({
   // Bottom bar
   bottomBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: '#ffffff', paddingHorizontal: 20, paddingVertical: 16,
+    backgroundColor: '#ffffff', paddingHorizontal: 20, paddingTop: 14,
     borderTopWidth: 1, borderTopColor: '#e2e8f0',
   },
   bottomRow: { flexDirection: 'row', gap: 12 },

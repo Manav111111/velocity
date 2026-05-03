@@ -6,6 +6,7 @@ import {
   subscribeToCollection, subscribeWithQuery, addDocument,
   subscribeToUserOrders, subscribeToSubcollection,
 } from '../services/firestoreService';
+import { getCategoryRemoteUri } from '../utils/categoryMedia';
 
 const AppContext = createContext();
 
@@ -22,6 +23,10 @@ function resolveIcon(iconValue) {
   if (!iconValue) return 'category';
   if (/^[a-z]/.test(iconValue) && iconValue.length > 1) return iconValue;
   return EMOJI_TO_ICON[iconValue] || 'category';
+}
+
+function normalizeText(value) {
+  return (value || '').toString().trim().toLowerCase();
 }
 
 export function AppProvider({ children }) {
@@ -136,7 +141,11 @@ export function AppProvider({ children }) {
     });
 
     const unsubCategories = subscribeToCollection('categories', (data) => {
-      const resolved = data.map((cat) => ({ ...cat, resolvedIcon: resolveIcon(cat.icon) }));
+      const resolved = data.map((cat) => ({
+        ...cat,
+        imageUrl: getCategoryRemoteUri(cat),
+        resolvedIcon: resolveIcon(cat.icon || cat.iconName),
+      }));
       setCategories(resolved);
       decrementLoading();
     });
@@ -194,6 +203,24 @@ export function AppProvider({ children }) {
 
   const trendingProducts = enrichedProducts.filter((p) => p.isTrending === true);
   const featuredProducts = enrichedProducts.filter((p) => p.isFeatured === true);
+  const categoriesWithCounts = categories.map((cat) => {
+    const catId = normalizeText(cat.id);
+    const catName = normalizeText(cat.name);
+    const computedCount = enrichedProducts.filter((p) => {
+      const productCategory = normalizeText(p.category);
+      const productCategoryId = normalizeText(p.categoryId);
+      return (
+        productCategory === catName ||
+        productCategoryId === catId ||
+        productCategoryId === catName
+      );
+    }).length;
+
+    return {
+      ...cat,
+      productCount: cat.productCount ?? computedCount,
+    };
+  });
 
   // ==========================================
   // Search & filter
@@ -359,7 +386,7 @@ export function AppProvider({ children }) {
       // Auth
       user, authLoading,
       // Firebase data
-      products: enrichedProducts, categories, banners, trendingProducts, featuredProducts, loading,
+      products: enrichedProducts, categories: categoriesWithCounts, banners, trendingProducts, featuredProducts, loading,
       orders,
       // Saved addresses
       savedAddresses, activeAddressId, selectAddress,

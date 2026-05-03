@@ -40,7 +40,7 @@ function ProductCard({
     }
     return (
       <View style={[style, styles.imagePlaceholder]}>
-        <MaterialIcons name="image" size={iconSize} color="rgba(139,92,246,0.2)" />
+        <MaterialIcons name="image" size={iconSize} color="rgba(22,128,60,0.22)" />
       </View>
     );
   };
@@ -61,7 +61,7 @@ function ProductCard({
             style={small ? styles.qtyBtnSmall : styles.qtyBtn}
             onPress={() => onUpdateQty?.(product.id, -1)}
           >
-            <MaterialIcons name="remove" size={small ? 14 : 16} color="#8b5cf6" />
+            <MaterialIcons name="remove" size={small ? 14 : 16} color="#16803C" />
           </TouchableOpacity>
           <Text style={small ? styles.qtyTextSmall : styles.qtyText}>{cartQty}</Text>
           <TouchableOpacity
@@ -202,14 +202,14 @@ const styles = StyleSheet.create({
   horizontalCard: {
     width: 160,
     backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderRadius: 10,
     marginRight: 12,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: '#E5ECDC',
     position: 'relative',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
+    shadowOpacity: 0.03,
     shadowRadius: 8,
     elevation: 3,
     overflow: 'hidden',
@@ -256,9 +256,9 @@ const styles = StyleSheet.create({
   // === Grid card ===
   gridCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: '#E5ECDC',
     position: 'relative',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: '#16803C',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 8,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: '#16803C',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -376,10 +376,10 @@ const styles = StyleSheet.create({
   qtyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f3ff',
+    backgroundColor: '#ECFDF5',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#ede9fe',
+    borderColor: '#BBF7D0',
     overflow: 'hidden',
   },
   qtyBtn: {
@@ -389,21 +389,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   qtyBtnPlus: {
-    backgroundColor: '#8b5cf6',
+    backgroundColor: '#16803C',
   },
   qtyText: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#8b5cf6',
+    color: '#16803C',
     marginHorizontal: 6,
   },
   qtyRowSmall: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f3ff',
+    backgroundColor: '#ECFDF5',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ede9fe',
+    borderColor: '#BBF7D0',
     overflow: 'hidden',
   },
   qtyBtnSmall: {
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   qtyTextSmall: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#8b5cf6',
+    color: '#16803C',
     marginHorizontal: 4,
   },
 

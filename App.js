@@ -5,10 +5,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import SplashScreen from './screens/SplashScreen';
-import OnboardingScreen from './screens/OnboardingScreen';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import SearchScreen from './screens/SearchScreen';
@@ -30,6 +29,9 @@ const Tab = createBottomTabNavigator();
 
 function MainTabs() {
   const { cartItemCount } = useAppContext();
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 0);
+  const tabBarHeight = 58 + bottomInset;
 
   return (
     <Tab.Navigator
@@ -38,8 +40,8 @@ function MainTabs() {
         tabBarStyle: {
           backgroundColor: '#ffffff',
           borderTopWidth: 0,
-          height: 64,
-          paddingBottom: 10,
+          height: tabBarHeight,
+          paddingBottom: Math.max(bottomInset, 6),
           paddingTop: 6,
           elevation: 15,
           shadowColor: '#000',
@@ -47,12 +49,16 @@ function MainTabs() {
           shadowOpacity: 0.06,
           shadowRadius: 12,
         },
-        tabBarActiveTintColor: '#8B5CF6',
+        tabBarHideOnKeyboard: true,
+        tabBarActiveTintColor: '#16803C',
         tabBarInactiveTintColor: '#94a3b8',
         tabBarLabelStyle: {
           fontSize: 9,
           fontWeight: '700',
-          letterSpacing: 0.3,
+          letterSpacing: 0,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 2,
         },
         tabBarIcon: ({ color, size }) => {
           let iconName;
@@ -74,7 +80,7 @@ function MainTabs() {
         options={{
           tabBarLabel: 'CART',
           tabBarBadge: cartItemCount > 0 ? cartItemCount : undefined,
-          tabBarBadgeStyle: { backgroundColor: '#8b5cf6', fontSize: 10, fontWeight: 'bold' },
+          tabBarBadgeStyle: { backgroundColor: '#16803C', fontSize: 10, fontWeight: 'bold' },
         }}
       />
       <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ tabBarLabel: 'PROFILE' }} />
@@ -85,11 +91,12 @@ function MainTabs() {
 // Toast component
 function Toast() {
   const { toastMessage } = useAppContext();
+  const insets = useSafeAreaInsets();
   
   if (!toastMessage) return null;
 
   return (
-    <View style={styles.toastContainer}>
+    <View style={[styles.toastContainer, { bottom: Math.max(insets.bottom, 0) + 86 }]}>
       <View style={styles.toast}>
         <MaterialIcons name="check-circle" size={18} color="#10b981" />
         <Text style={styles.toastText}>{toastMessage}</Text>
@@ -108,7 +115,6 @@ function AppContent() {
           screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
         >
           <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="Home" component={MainTabs} />

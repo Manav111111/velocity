@@ -1,27 +1,40 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  Dimensions, TextInput, Platform, Image, ActivityIndicator,
+  TextInput, Image, ActivityIndicator, useWindowDimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAppContext } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
-import SkeletonLoader from '../components/SkeletonLoader';
-
-const { width } = Dimensions.get('window');
-const catW = (width - 42) / 2;
+import { getCategoryFallbackSource, getCategoryImageSource } from '../utils/categoryMedia';
 
 const RECENT_SEARCHES_KEY = '@velocity_recent_searches';
 
+function CategoryThumb({ cat }) {
+  const [failed, setFailed] = useState(false);
+  const source = failed ? getCategoryFallbackSource(cat) : getCategoryImageSource(cat);
+
+  return (
+    <Image
+      source={source}
+      style={styles.categoryThumb}
+      resizeMode="contain"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 export default function SearchScreen({ navigation, route }) {
   const {
-    products, categories, trendingProducts, featuredProducts,
+    products, categories, featuredProducts,
     searchProducts, getProductsByCategory, filterProducts, addToCart, loading,
     getCartItemQty, updateCartQty, toggleWishlist, isInWishlist,
   } = useAppContext();
-
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 0);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -29,27 +42,23 @@ export default function SearchScreen({ navigation, route }) {
   const [activeFilters, setActiveFilters] = useState(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('');
 
-  // Load recent searches from AsyncStorage
+  const categoryTileWidth = width >= 520 ? 126 : 104;
+  const filterCategory = route?.params?.filterCategory;
+  const filterTimestamp = route?.params?.filterTimestamp;
+  const routeFilters = route?.params?.filters;
+
   useEffect(() => {
     AsyncStorage.getItem(RECENT_SEARCHES_KEY).then((val) => {
       if (val) setRecentSearches(JSON.parse(val));
     });
   }, []);
 
-  // Handle category filter passed from HomeScreen or CategoriesScreen
-  const filterCategory = route?.params?.filterCategory;
-  const filterTimestamp = route?.params?.filterTimestamp; // unique key to re-trigger
-  // Handle filters passed from FilterScreen
-  const routeFilters = route?.params?.filters;
-
   useEffect(() => {
     if (filterCategory) {
       setActiveCategoryFilter(filterCategory);
       setSearchQuery(filterCategory);
       setIsSearching(true);
-      // Directly filter by category for precise results
-      const categoryResults = getProductsByCategory(filterCategory);
-      setSearchResults(categoryResults);
+      setSearchResults(getProductsByCategory(filterCategory));
     }
   }, [filterCategory, filterTimestamp, getProductsByCategory]);
 
@@ -59,28 +68,24 @@ export default function SearchScreen({ navigation, route }) {
     }
   }, [routeFilters]);
 
-  // Save recent searches to AsyncStorage
   const saveRecentSearch = useCallback(async (query) => {
     if (!query.trim()) return;
-    const updated = [query.trim(), ...recentSearches.filter((r) => r !== query.trim())].slice(0, 8);
-    setRecentSearches(updated);
-    await AsyncStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+    const next = [query.trim(), ...recentSearches.filter((r) => r !== query.trim())].slice(0, 8);
+    setRecentSearches(next);
+    await AsyncStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
   }, [recentSearches]);
 
-  // Remove one recent search
   const removeRecentSearch = useCallback(async (item) => {
-    const updated = recentSearches.filter((r) => r !== item);
-    setRecentSearches(updated);
-    await AsyncStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+    const next = recentSearches.filter((r) => r !== item);
+    setRecentSearches(next);
+    await AsyncStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
   }, [recentSearches]);
 
-  // Clear all recent searches
   const clearRecentSearches = useCallback(async () => {
     setRecentSearches([]);
     await AsyncStorage.removeItem(RECENT_SEARCHES_KEY);
   }, []);
 
-  // Debounced search
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
@@ -88,43 +93,30 @@ export default function SearchScreen({ navigation, route }) {
       setActiveCategoryFilter('');
       return;
     }
-    // Skip debounced text search if results were already set by category filter
-    if (activeCategoryFilter && searchQuery === activeCategoryFilter) {
-      return;
-    }
+
+    if (activeCategoryFilter && searchQuery === activeCategoryFilter) return;
+
     setIsSearching(true);
-    setActiveCategoryFilter(''); // Clear category filter when manually searching
+    setActiveCategoryFilter('');
     const timer = setTimeout(() => {
       let results = searchProducts(searchQuery);
-      if (activeFilters) {
-        results = filterProducts(results, activeFilters);
-      }
+      if (activeFilters) results = filterProducts(results, activeFilters);
       setSearchResults(results);
-    }, 300);
+    }, 250);
+
     return () => clearTimeout(timer);
-  }, [searchQuery, searchProducts, activeFilters, filterProducts]);
+  }, [searchQuery, searchProducts, activeFilters, filterProducts, activeCategoryFilter]);
 
-  // Apply filters to all products when no search query
-  const allFilteredProducts = useCallback(() => {
-    const base = featuredProducts.length > 0 ? featuredProducts : products.slice(0, 12);
-    if (!activeFilters) return base;
-    return filterProducts(base, activeFilters);
-  }, [featuredProducts, products, activeFilters, filterProducts]);
-
-  const handleSearch = useCallback((text) => {
-    setSearchQuery(text);
-  }, []);
-
-  const handleProductPress = (product) => {
-    if (searchQuery.trim()) {
-      saveRecentSearch(searchQuery.trim());
-    }
+  const saveAndOpenProduct = (product) => {
+    if (searchQuery.trim()) saveRecentSearch(searchQuery.trim());
     navigation.navigate('ProductDetail', { product });
   };
 
-  const handleRecentPress = (item) => {
-    setSearchQuery(item);
+  const openCategory = (cat) => {
+    setActiveCategoryFilter(cat.name);
+    setSearchQuery(cat.name);
     setIsSearching(true);
+    setSearchResults(getProductsByCategory(cat.name));
   };
 
   const handleFilterPress = () => {
@@ -133,98 +125,83 @@ export default function SearchScreen({ navigation, route }) {
 
   const clearFilters = () => setActiveFilters(null);
 
-  const displayCategories = categories.slice(0, 4).map((cat) => ({
-    name: cat.name,
-    badge: 'POPULAR',
-    icon: cat.resolvedIcon || 'category',
-    imageUrl: cat.imageUrl,
-    color: cat.color || '#1a2a4a',
-  }));
-
-  const displayProducts = isSearching ? searchResults : allFilteredProducts();
-  const hasActiveFilters = activeFilters && Object.values(activeFilters).some((v) => v !== undefined && v !== '' && v !== false && v !== 'popularity');
+  const baseProducts = featuredProducts.length > 0 ? featuredProducts : products.slice(0, 12);
+  const displayProducts = isSearching
+    ? searchResults
+    : activeFilters
+      ? filterProducts(baseProducts, activeFilters)
+      : baseProducts;
+  const hasActiveFilters = activeFilters && Object.values(activeFilters).some((v) => (
+    v !== undefined && v !== '' && v !== false && v !== 'popularity'
+  ));
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <View style={styles.avatarHolder}>
-            <MaterialIcons name="person" size={16} color="#ffffff" />
-          </View>
-          <Text style={styles.headerBrand}>Velocity</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Location')}>
-            <MaterialIcons name="location-pin" size={22} color="#8b5cf6" />
-          </TouchableOpacity>
+        <View>
+          <Text style={styles.headerTitle}>Search store</Text>
+          <Text style={styles.headerSub}>Fresh groceries, snacks and essentials</Text>
         </View>
-        <Text style={styles.pageTitle}>Explore</Text>
-        <Text style={styles.pageSubtitle}>Find the freshest essentials delivered fast.</Text>
+        <TouchableOpacity onPress={handleFilterPress} style={[styles.headerFilter, hasActiveFilters && styles.headerFilterActive]} activeOpacity={0.82}>
+          <MaterialIcons name="tune" size={20} color={hasActiveFilters ? '#ffffff' : '#16803C'} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.searchSection}>
+        <View style={styles.searchBar}>
+          <MaterialIcons name="search" size={20} color="#64748B" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for milk, atta, chips..."
+            placeholderTextColor="#718096"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCorrect={false}
+            returnKeyType="search"
+            onSubmitEditing={() => { if (searchQuery.trim()) saveRecentSearch(searchQuery.trim()); }}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => { setSearchQuery(''); setIsSearching(false); }} activeOpacity={0.75}>
+              <MaterialIcons name="close" size={18} color="#94A3B8" />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 92 + bottomInset }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Search Bar */}
-        <View style={styles.searchSection}>
-          <View style={styles.searchBar}>
-            <MaterialIcons name="search" size={20} color="#8b5cf6" />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search for products, categories..."
-              placeholderTextColor="#94a3b8"
-              value={searchQuery}
-              onChangeText={handleSearch}
-              autoCorrect={false}
-              returnKeyType="search"
-              onSubmitEditing={() => { if (searchQuery.trim()) saveRecentSearch(searchQuery.trim()); }}
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity onPress={() => { setSearchQuery(''); setIsSearching(false); }}>
-                <MaterialIcons name="close" size={18} color="#94a3b8" />
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity onPress={handleFilterPress} style={[styles.filterBtn, hasActiveFilters && styles.filterBtnActive]}>
-              <MaterialIcons name="tune" size={18} color={hasActiveFilters ? '#ffffff' : '#1e293b'} />
+        {hasActiveFilters && (
+          <View style={styles.filtersBanner}>
+            <View style={styles.filtersLeft}>
+              <MaterialIcons name="filter-list" size={16} color="#16803C" />
+              <Text style={styles.filtersText}>Filters applied</Text>
+            </View>
+            <TouchableOpacity onPress={clearFilters} activeOpacity={0.75}>
+              <Text style={styles.clearFiltersText}>Clear</Text>
             </TouchableOpacity>
           </View>
+        )}
 
-          {/* Active filters indicator */}
-          {hasActiveFilters && (
-            <View style={styles.filtersActiveRow}>
-              <MaterialIcons name="filter-list" size={14} color="#8b5cf6" />
-              <Text style={styles.filtersActiveText}>Filters applied</Text>
-              <TouchableOpacity onPress={clearFilters}>
-                <Text style={styles.clearFiltersText}>Clear</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-
-        {/* Recent Searches */}
         {!isSearching && recentSearches.length > 0 && (
-          <View>
-            <View style={styles.recentHeader}>
-              <Text style={styles.sectionTitleSmall}>RECENT SEARCHES</Text>
-              <TouchableOpacity onPress={clearRecentSearches}>
-                <Text style={styles.clearText}>Clear all</Text>
+          <View style={styles.block}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Recent searches</Text>
+              <TouchableOpacity onPress={clearRecentSearches} activeOpacity={0.75}>
+                <Text style={styles.sectionAction}>Clear</Text>
               </TouchableOpacity>
             </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 20 }}
-              style={{ marginBottom: 20 }}
-            >
-              {recentSearches.map((item, idx) => (
-                <View key={idx} style={styles.recentPillWrapper}>
-                  <TouchableOpacity style={styles.recentPill} onPress={() => handleRecentPress(item)}>
-                    <MaterialIcons name="history" size={13} color="#94a3b8" />
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recentRow}>
+              {recentSearches.map((item) => (
+                <View key={item} style={styles.recentPillWrapper}>
+                  <TouchableOpacity style={styles.recentPill} onPress={() => { setSearchQuery(item); setIsSearching(true); }} activeOpacity={0.82}>
+                    <MaterialIcons name="history" size={14} color="#64748B" />
                     <Text style={styles.recentText}>{item}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => removeRecentSearch(item)} style={styles.recentDelete}>
-                    <MaterialIcons name="close" size={12} color="#94a3b8" />
+                  <TouchableOpacity onPress={() => removeRecentSearch(item)} style={styles.recentDelete} activeOpacity={0.75}>
+                    <MaterialIcons name="close" size={12} color="#94A3B8" />
                   </TouchableOpacity>
                 </View>
               ))}
@@ -232,81 +209,69 @@ export default function SearchScreen({ navigation, route }) {
           </View>
         )}
 
-        {/* Search Results Header */}
-        {isSearching && (
-          <View style={styles.popularHeader}>
-            <Text style={styles.sectionTitle}>
-              {searchResults.length > 0
-                ? `Results (${searchResults.length})`
-                : 'No Results Found'}
-            </Text>
-          </View>
-        )}
-
-        {isSearching && searchResults.length === 0 && searchQuery.length > 0 && (
-          <View style={styles.emptySearch}>
-            <MaterialIcons name="search-off" size={50} color="#cbd5e1" />
-            <Text style={styles.emptySearchText}>No products match "{searchQuery}"</Text>
-            <Text style={styles.emptySearchSub}>Try a different search term or clear filters</Text>
-          </View>
-        )}
-
-        {/* Trending Categories (when not searching) */}
-        {!isSearching && displayCategories.length > 0 && (
-          <View>
-            <Text style={styles.sectionTitle}>Trending Now</Text>
-            <View style={styles.trendingGrid}>
-              {displayCategories.map((cat, idx) => (
+        {!isSearching && categories.length > 0 && (
+          <View style={styles.block}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Browse categories</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('CategoriesTab')} activeOpacity={0.75}>
+                <Text style={styles.sectionAction}>See all</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryRow}>
+              {categories.slice(0, 10).map((cat) => (
                 <TouchableOpacity
-                  key={idx}
-                  style={styles.trendCard}
-                  onPress={() => setSearchQuery(cat.name)}
+                  key={cat.id}
+                  style={[styles.categoryCard, { width: categoryTileWidth }]}
+                  onPress={() => openCategory(cat)}
+                  activeOpacity={0.86}
                 >
-                  <View style={[styles.trendImageFiller, { backgroundColor: cat.color }]}>
-                    {cat.imageUrl ? (
-                      <Image source={{ uri: cat.imageUrl }} style={{ width: '100%', height: '100%', opacity: 0.8 }} resizeMode="cover" />
-                    ) : (
-                      <MaterialIcons name={cat.icon} size={40} color="rgba(255,255,255,0.1)" style={{ position: 'absolute', bottom: -10, right: -10 }} />
-                    )}
+                  <View style={styles.categoryImageBox}>
+                    <CategoryThumb cat={cat} />
                   </View>
-                  <View style={styles.trendOverlay}>
-                    <Text style={styles.trendName}>{cat.name}</Text>
-                    <Text style={styles.trendBadge}>{cat.badge}</Text>
-                  </View>
+                  <Text style={styles.categoryName} numberOfLines={2}>{cat.name}</Text>
                 </TouchableOpacity>
               ))}
-            </View>
+            </ScrollView>
           </View>
         )}
 
-        {/* Product List Header */}
-        {!isSearching && (
-          <View style={styles.popularHeader}>
+        <View style={styles.sectionHeader}>
+          <View>
             <Text style={styles.sectionTitle}>
-              {hasActiveFilters ? 'Filtered Products' : featuredProducts.length > 0 ? 'Featured Products' : 'Popular Results'}
+              {isSearching ? (searchResults.length > 0 ? `Results for "${searchQuery}"` : 'No matches found') : hasActiveFilters ? 'Filtered products' : 'Popular products'}
             </Text>
+            <Text style={styles.sectionSub}>{displayProducts.length} items available</Text>
           </View>
-        )}
-
-        {/* Products Grid */}
-        <View style={styles.productsGrid}>
-          {displayProducts.map((item) => (
-            <ProductCard
-              key={item.id}
-              product={item}
-              variant="grid"
-              onPress={() => handleProductPress(item)}
-              onAddToCart={addToCart}
-              onToggleWishlist={toggleWishlist}
-              isInWishlist={isInWishlist(item.id)}
-              cartQty={getCartItemQty(item.id)}
-              onUpdateQty={updateCartQty}
-            />
-          ))}
         </View>
 
+        {isSearching && searchResults.length === 0 && searchQuery.length > 0 ? (
+          <View style={styles.emptySearch}>
+            <View style={styles.emptyIcon}>
+              <MaterialIcons name="search-off" size={34} color="#16803C" />
+            </View>
+            <Text style={styles.emptySearchText}>No products match "{searchQuery}"</Text>
+            <Text style={styles.emptySearchSub}>Try another word or clear filters.</Text>
+          </View>
+        ) : (
+          <View style={styles.productsGrid}>
+            {displayProducts.map((item) => (
+              <ProductCard
+                key={item.id}
+                product={item}
+                variant="grid"
+                onPress={() => saveAndOpenProduct(item)}
+                onAddToCart={addToCart}
+                onToggleWishlist={toggleWishlist}
+                isInWishlist={isInWishlist(item.id)}
+                cartQty={getCartItemQty(item.id)}
+                onUpdateQty={updateCartQty}
+              />
+            ))}
+          </View>
+        )}
+
         {loading && (
-          <ActivityIndicator size="small" color="#8b5cf6" style={{ marginTop: 20 }} />
+          <ActivityIndicator size="small" color="#16803C" style={{ marginTop: 20 }} />
         )}
       </ScrollView>
     </SafeAreaView>
@@ -314,48 +279,127 @@ export default function SearchScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fafafa' },
-  header: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12, backgroundColor: '#ffffff' },
-  headerTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  avatarHolder: { width: 28, height: 28, borderRadius: 10, backgroundColor: '#8b5cf6', alignItems: 'center', justifyContent: 'center' },
-  headerBrand: { fontSize: 16, fontWeight: '800', color: '#1e293b' },
-  pageTitle: { fontSize: 28, fontWeight: '900', color: '#1e293b', marginBottom: 4 },
-  pageSubtitle: { fontSize: 13, color: '#64748b', lineHeight: 18 },
-  searchSection: { paddingHorizontal: 16, marginBottom: 14, backgroundColor: '#ffffff', paddingBottom: 12 },
-  searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f8fafc', borderRadius: 12, height: 44, paddingLeft: 14, paddingRight: 4, borderWidth: 1, borderColor: '#f1f5f9' },
-  searchInput: { flex: 1, color: '#1e293b', fontSize: 13, marginHorizontal: 8 },
-  filterBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
-  filterBtnActive: { backgroundColor: '#8b5cf6' },
-  filtersActiveRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 4, marginTop: 8 },
-  filtersActiveText: { fontSize: 12, color: '#8b5cf6', flex: 1 },
-  clearFiltersText: { fontSize: 12, fontWeight: '700', color: '#ef4444' },
-  recentHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, marginBottom: 8 },
-  sectionTitleSmall: { fontSize: 9, fontWeight: 'bold', color: '#94a3b8', letterSpacing: 1.5 },
-  clearText: { fontSize: 11, fontWeight: '600', color: '#8b5cf6' },
-  recentPillWrapper: { flexDirection: 'row', alignItems: 'center', marginRight: 8 },
+  container: { flex: 1, backgroundColor: '#F6F8F4' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 12,
+    backgroundColor: '#ffffff',
+  },
+  headerTitle: { fontSize: 24, fontWeight: '900', color: '#111827' },
+  headerSub: { fontSize: 12, fontWeight: '700', color: '#64748B', marginTop: 2 },
+  headerFilter: {
+    width: 42,
+    height: 42,
+    borderRadius: 8,
+    backgroundColor: '#E8F8DE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#CDEFC0',
+  },
+  headerFilterActive: { backgroundColor: '#16803C', borderColor: '#16803C' },
+  searchSection: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6ECE1',
+  },
+  searchBar: {
+    height: 46,
+    borderRadius: 8,
+    backgroundColor: '#F5F7F3',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 13,
+    borderWidth: 1,
+    borderColor: '#E4EADF',
+  },
+  searchInput: { flex: 1, color: '#111827', fontSize: 14, fontWeight: '700' },
+  filtersBanner: {
+    marginHorizontal: 16,
+    marginTop: 14,
+    marginBottom: 4,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  filtersLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  filtersText: { fontSize: 12, fontWeight: '900', color: '#166534' },
+  clearFiltersText: { fontSize: 12, fontWeight: '900', color: '#DC2626' },
+  block: { marginTop: 16 },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 12,
+  },
+  sectionTitle: { fontSize: 18, fontWeight: '900', color: '#111827' },
+  sectionSub: { fontSize: 11, fontWeight: '700', color: '#718096', marginTop: 2 },
+  sectionAction: { fontSize: 12, fontWeight: '900', color: '#16803C' },
+  recentRow: { paddingHorizontal: 16, gap: 8 },
+  recentPillWrapper: { flexDirection: 'row', alignItems: 'center', marginRight: 6 },
   recentPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: '#ffffff', paddingHorizontal: 12, paddingVertical: 8,
-    borderRadius: 10, borderWidth: 1, borderColor: '#f1f5f9',
+    height: 36,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5ECDC',
   },
-  recentText: { fontSize: 12, color: '#1e293b' },
-  recentDelete: { marginLeft: 4, padding: 4 },
-  sectionTitle: { fontSize: 18, fontWeight: '800', color: '#1e293b', paddingHorizontal: 16, marginBottom: 12 },
-  trendingGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 10, marginBottom: 24 },
-  trendCard: { width: catW, height: 120, borderRadius: 16, overflow: 'hidden' },
-  trendImageFiller: { flex: 1, position: 'relative' },
-  trendOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 10, backgroundColor: 'rgba(0,0,0,0.3)' },
-  trendName: { fontSize: 14, fontWeight: '800', color: '#ffffff', marginBottom: 3 },
-  trendBadge: { fontSize: 8, fontWeight: 'bold', color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, alignSelf: 'flex-start' },
-  popularHeader: { marginBottom: 4 },
-
-  // Products grid layout
+  recentText: { fontSize: 12, fontWeight: '800', color: '#334155' },
+  recentDelete: { marginLeft: 2, padding: 6 },
+  categoryRow: { paddingHorizontal: 16, gap: 10 },
+  categoryCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#E5ECDC',
+  },
+  categoryImageBox: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 10,
+    backgroundColor: '#ECFDF5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  categoryThumb: { width: '90%', height: '90%' },
+  categoryName: { minHeight: 33, fontSize: 12, lineHeight: 16, fontWeight: '900', color: '#111827', textAlign: 'center' },
   productsGrid: {
-    flexDirection: 'row', flexWrap: 'wrap',
-    paddingHorizontal: 16, gap: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 16,
+    gap: 10,
   },
-
-  emptySearch: { alignItems: 'center', paddingVertical: 40 },
-  emptySearchText: { fontSize: 16, fontWeight: '700', color: '#1e293b', marginTop: 12 },
-  emptySearchSub: { fontSize: 13, color: '#64748b', marginTop: 4 },
+  emptySearch: { alignItems: 'center', paddingVertical: 42, paddingHorizontal: 30 },
+  emptyIcon: {
+    width: 68,
+    height: 68,
+    borderRadius: 12,
+    backgroundColor: '#E8F8DE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
+  },
+  emptySearchText: { fontSize: 16, fontWeight: '900', color: '#111827', textAlign: 'center' },
+  emptySearchSub: { fontSize: 13, fontWeight: '600', color: '#64748B', marginTop: 5, textAlign: 'center' },
 });

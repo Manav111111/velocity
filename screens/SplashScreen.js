@@ -8,7 +8,6 @@ const { width, height } = Dimensions.get('window');
 export default function SplashScreen({ navigation }) {
   const { user, authLoading } = useAppContext();
   const pulseAnim = useRef(new Animated.Value(0)).current;
-  const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.loop(
@@ -17,12 +16,6 @@ export default function SplashScreen({ navigation }) {
         Animated.timing(pulseAnim, { toValue: 0, duration: 0, useNativeDriver: true }),
       ])
     ).start();
-
-    Animated.timing(progressAnim, {
-      toValue: 1,
-      duration: 2500,
-      useNativeDriver: false,
-    }).start();
   }, []);
 
   // Navigate after animation AND auth check completes
@@ -34,17 +27,12 @@ export default function SplashScreen({ navigation }) {
         // User is already logged in — skip onboarding/login
         navigation.replace('Home');
       } else {
-        navigation.replace('Onboarding');
+        navigation.replace('Login');
       }
-    }, 2600); // Slightly after progress animation ends
+    }, 900);
 
     return () => clearTimeout(timer);
   }, [authLoading, user]);
-
-  const progressWidth = progressAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
 
   return (
     <View style={styles.container}>
@@ -62,9 +50,6 @@ export default function SplashScreen({ navigation }) {
         <Text style={styles.subtitle}>ULTIMATE DELIVERY INFRASTRUCTURE</Text>
       </View>
       <View style={styles.footer}>
-        <View style={styles.progressBarContainer}>
-          <Animated.View style={[styles.progressBarActive, { width: progressWidth }]} />
-        </View>
         <View style={styles.statusContainer}>
           <View style={styles.pulseContainer}>
             <View style={styles.pulseDot} />
@@ -73,11 +58,8 @@ export default function SplashScreen({ navigation }) {
               opacity: pulseAnim.interpolate({ inputRange: [0, 1], outputRange: [0.8, 0] })
             }]} />
           </View>
-          <Text style={styles.statusText}>SYNCHRONIZING ASSETS</Text>
+          <Text style={styles.statusText}>OPENING STORE</Text>
         </View>
-      </View>
-      <View style={styles.bottomIcon}>
-        <MaterialIcons name="all-inclusive" size={16} color="#4d556b" />
       </View>
     </View>
   );
@@ -93,13 +75,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 48, fontWeight: '900', color: '#1e293b', letterSpacing: -1.5, marginBottom: 8 },
   titlePro: { color: '#8b5cf6' },
   subtitle: { fontSize: 10, fontWeight: 'bold', color: '#64748b', letterSpacing: 2 },
-  footer: { position: 'absolute', bottom: 100, width: '100%', alignItems: 'center', paddingHorizontal: 40 },
-  progressBarContainer: { width: '80%', height: 6, backgroundColor: '#f1f5f9', borderRadius: 10, marginBottom: 24, overflow: 'hidden' },
-  progressBarActive: { height: '100%', backgroundColor: '#8b5cf6', borderRadius: 10 },
+  footer: { position: 'absolute', bottom: 90, width: '100%', alignItems: 'center', paddingHorizontal: 40 },
   statusContainer: { flexDirection: 'row', alignItems: 'center' },
   pulseContainer: { width: 16, height: 16, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
   pulseDot: { width: 8, height: 8, backgroundColor: '#8b5cf6', borderRadius: 4, position: 'absolute', zIndex: 2 },
   pulseRing: { width: 16, height: 16, backgroundColor: '#8b5cf6', borderRadius: 8, position: 'absolute', zIndex: 1 },
   statusText: { fontSize: 12, fontWeight: 'bold', color: '#64748b', letterSpacing: 1.5 },
-  bottomIcon: { position: 'absolute', bottom: 30, alignItems: 'center' },
 });
