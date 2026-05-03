@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  SafeAreaView, Platform, ActivityIndicator, Alert, TextInput,
+  Platform, ActivityIndicator, Alert, TextInput,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAppContext } from '../context/AppContext';
 
@@ -78,7 +79,7 @@ export default function CheckoutScreen({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }}>
         {/* Header */}
         <View style={styles.header}>
@@ -202,10 +203,10 @@ export default function CheckoutScreen({ navigation, route }) {
           {placing ? (
             <ActivityIndicator color="#ffffff" />
           ) : (
-            <>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <MaterialIcons name="local-shipping" size={18} color="#ffffff" />
               <Text style={styles.placeBtnText}>PLACE ORDER</Text>
-            </>
+            </View>
           )}
         </TouchableOpacity>
       </View>
@@ -214,7 +215,7 @@ export default function CheckoutScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff', paddingTop: Platform.OS === 'android' ? 40 : 0 },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingVertical: 15,

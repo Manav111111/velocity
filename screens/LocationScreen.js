@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   StyleSheet, Text, View, TextInput, TouchableOpacity,
-  ScrollView, SafeAreaView, Platform, ActivityIndicator, Alert,
+  ScrollView, Platform, ActivityIndicator, Alert,
   Animated, Dimensions, StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useAppContext } from '../context/AppContext';
@@ -216,7 +217,7 @@ export default function LocationScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       {/* ── Header ── */}
@@ -488,7 +489,7 @@ export default function LocationScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff', paddingTop: Platform.OS === 'android' ? 40 : 0 },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingVertical: 14,

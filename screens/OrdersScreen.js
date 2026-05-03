@@ -177,7 +177,7 @@ export default function OrdersScreen({ navigation }) {
                     <MaterialIcons name="payments" size={13} color="#6d758c" />
                     <Text style={styles.footerText}>COD</Text>
                   </View>
-                  {order.receiverName && (
+                  {Boolean(order.receiverName) && (
                     <View style={styles.footerItem}>
                       <MaterialIcons name="person" size={13} color="#6d758c" />
                       <Text style={styles.footerText}>{order.receiverName}</Text>
@@ -200,7 +200,7 @@ export default function OrdersScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: '#fafafa' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: Platform.OS === 'android' ? 50 : 50, paddingBottom: 12,

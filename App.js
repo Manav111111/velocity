@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text, Animated } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import SplashScreen from './screens/SplashScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
@@ -36,23 +37,22 @@ function MainTabs() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderTopColor: '#e5e7eb',
-          height: 70,
-          paddingBottom: 14,
-          paddingTop: 8,
-          elevation: 10,
+          borderTopWidth: 0,
+          height: 64,
+          paddingBottom: 10,
+          paddingTop: 6,
+          elevation: 15,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 10,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.06,
+          shadowRadius: 12,
         },
         tabBarActiveTintColor: '#8B5CF6',
         tabBarInactiveTintColor: '#94a3b8',
         tabBarLabelStyle: {
           fontSize: 9,
-          fontWeight: 'bold',
-          letterSpacing: 0.5,
+          fontWeight: '700',
+          letterSpacing: 0.3,
         },
         tabBarIcon: ({ color, size }) => {
           let iconName;
@@ -68,7 +68,15 @@ function MainTabs() {
       <Tab.Screen name="HomeTab" component={HomeScreen} options={{ tabBarLabel: 'HOME' }} />
       <Tab.Screen name="SearchTab" component={SearchScreen} options={{ tabBarLabel: 'SEARCH' }} />
       <Tab.Screen name="CategoriesTab" component={CategoriesScreen} options={{ tabBarLabel: 'CATEGORIES' }} />
-      <Tab.Screen name="CartTab" component={CartScreen} options={{ tabBarLabel: 'CART' }} />
+      <Tab.Screen
+        name="CartTab"
+        component={CartScreen}
+        options={{
+          tabBarLabel: 'CART',
+          tabBarBadge: cartItemCount > 0 ? cartItemCount : undefined,
+          tabBarBadgeStyle: { backgroundColor: '#8b5cf6', fontSize: 10, fontWeight: 'bold' },
+        }}
+      />
       <Tab.Screen name="ProfileTab" component={ProfileScreen} options={{ tabBarLabel: 'PROFILE' }} />
     </Tab.Navigator>
   );
@@ -92,7 +100,7 @@ function Toast() {
 
 function AppContent() {
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <StatusBar style="dark" />
       <NavigationContainer>
         <Stack.Navigator
@@ -114,15 +122,17 @@ function AppContent() {
         </Stack.Navigator>
       </NavigationContainer>
       <Toast />
-    </>
+    </View>
   );
 }
 
 export default function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <SafeAreaProvider>
+      <AppProvider>
+        <AppContent />
+      </AppProvider>
+    </SafeAreaProvider>
   );
 }
 

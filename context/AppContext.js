@@ -143,7 +143,12 @@ export function AppProvider({ children }) {
 
     const unsubBanners = subscribeWithQuery('banners',
       [{ field: 'isActive', operator: '==', value: true }],
-      (data) => { setBanners(data); decrementLoading(); }
+      (data) => {
+        // Sort by priority (lower number = higher priority)
+        const sorted = [...data].sort((a, b) => (a.priority || 99) - (b.priority || 99));
+        setBanners(sorted);
+        decrementLoading();
+      }
     );
 
     return () => { unsubProducts(); unsubCategories(); unsubBanners(); };
@@ -174,29 +179,43 @@ export function AppProvider({ children }) {
     return () => unsub();
   }, [user]);
 
-  // ==========================================
-  // Computed data
-  // ==========================================
-  const trendingProducts = products.filter((p) => p.isTrending === true);
-  const featuredProducts = products.filter((p) => p.isFeatured === true);
+  // Build categoryId -> name map for resolving product categories
+  const categoryMap = {};
+  categories.forEach((cat) => { categoryMap[cat.id] = cat.name; });
+
+  // Enrich products with resolved category name
+  const enrichedProducts = products.map((p) => {
+    // If product has categoryId but no category name, resolve it
+    if (p.categoryId && !p.category) {
+      return { ...p, category: categoryMap[p.categoryId] || p.categoryId };
+    }
+    return p;
+  });
+
+  const trendingProducts = enrichedProducts.filter((p) => p.isTrending === true);
+  const featuredProducts = enrichedProducts.filter((p) => p.isFeatured === true);
 
   // ==========================================
   // Search & filter
   // ==========================================
   const searchProducts = useCallback((queryStr) => {
-    if (!queryStr || queryStr.trim() === '') return products;
+    if (!queryStr || queryStr.trim() === '') return enrichedProducts;
     const q = queryStr.toLowerCase().trim();
-    return products.filter((p) =>
+    return enrichedProducts.filter((p) =>
       p.name?.toLowerCase().includes(q) ||
       p.category?.toLowerCase().includes(q) ||
+      p.categoryId?.toLowerCase().includes(q) ||
       p.description?.toLowerCase().includes(q)
     );
-  }, [products]);
+  }, [enrichedProducts]);
 
   const getProductsByCategory = useCallback((categoryName) => {
-    if (!categoryName) return products;
-    return products.filter((p) => p.category?.toLowerCase() === categoryName.toLowerCase());
-  }, [products]);
+    if (!categoryName) return enrichedProducts;
+    return enrichedProducts.filter((p) =>
+      p.category?.toLowerCase() === categoryName.toLowerCase() ||
+      p.categoryId?.toLowerCase() === categoryName.toLowerCase()
+    );
+  }, [enrichedProducts]);
 
   /**
    * Filter products by a set of filter params:
@@ -207,7 +226,8 @@ export function AppProvider({ children }) {
 
     if (filters.category) {
       result = result.filter((p) =>
-        p.category?.toLowerCase() === filters.category.toLowerCase()
+        p.category?.toLowerCase() === filters.category.toLowerCase() ||
+        p.categoryId?.toLowerCase() === filters.category.toLowerCase()
       );
     }
     if (filters.minPrice !== undefined && filters.minPrice !== '') {
@@ -339,7 +359,7 @@ export function AppProvider({ children }) {
       // Auth
       user, authLoading,
       // Firebase data
-      products, categories, banners, trendingProducts, featuredProducts, loading,
+      products: enrichedProducts, categories, banners, trendingProducts, featuredProducts, loading,
       orders,
       // Saved addresses
       savedAddresses, activeAddressId, selectAddress,

@@ -48,9 +48,9 @@ export default function WishlistScreen({ navigation }) {
           <View key={item.id} style={styles.itemCard}>
             {/* Image */}
             <View style={[styles.itemImage, { backgroundColor: item.color || '#1a2a4a' }]}>
-              {item.image ? (
+              {item.images?.[0] || item.image ? (
                 <Image
-                  source={{ uri: item.image }}
+                  source={{ uri: item.images?.[0] || item.image }}
                   style={{ width: '100%', height: '100%' }}
                   resizeMode="cover"
                 />
@@ -88,7 +88,7 @@ export default function WishlistScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: '#fafafa' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: Platform.OS === 'android' ? 50 : 20, paddingBottom: 12,

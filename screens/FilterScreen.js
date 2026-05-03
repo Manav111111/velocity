@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  SafeAreaView, Switch, Platform, TextInput,
+  Switch, Platform, TextInput,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAppContext } from '../context/AppContext';
@@ -57,7 +58,7 @@ export default function FilterScreen({ navigation, route }) {
   ].filter(Boolean).length;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
         <View>
@@ -71,7 +72,7 @@ export default function FilterScreen({ navigation, route }) {
             </View>
           )}
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
-            <MaterialIcons name="close" size={20} color="#dee5ff" />
+            <MaterialIcons name="close" size={20} color="#64748b" />
           </TouchableOpacity>
         </View>
       </View>

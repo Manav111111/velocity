@@ -176,7 +176,7 @@ export default function ProfileScreen({ navigation }) {
 
         {/* Recent Orders */}
         {recentOrders.length > 0 && (
-          <>
+          <View>
             <View style={styles.sectionRow}>
               <Text style={styles.sectionTitle}>RECENT ORDERS</Text>
               <TouchableOpacity onPress={() => navigation.navigate('Orders')}>
@@ -204,7 +204,7 @@ export default function ProfileScreen({ navigation }) {
                 </View>
               );
             })}
-          </>
+          </View>
         )}
 
         {/* Logout */}
@@ -224,7 +224,7 @@ export default function ProfileScreen({ navigation }) {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Edit Profile</Text>
               <TouchableOpacity onPress={() => setShowEditModal(false)}>
-                <MaterialIcons name="close" size={22} color="#dee5ff" />
+                <MaterialIcons name="close" size={22} color="#64748b" />
               </TouchableOpacity>
             </View>
 
@@ -254,9 +254,10 @@ export default function ProfileScreen({ navigation }) {
               />
             </View>
 
-            <Text style={styles.emailNote}>
-              <MaterialIcons name="lock" size={12} color="#40485d" /> Email: {displayEmail}
-            </Text>
+            <View style={styles.emailNoteRow}>
+              <MaterialIcons name="lock" size={12} color="#94a3b8" />
+              <Text style={styles.emailNote}> Email: {displayEmail}</Text>
+            </View>
 
             <TouchableOpacity style={styles.saveBtn} onPress={handleSaveProfile} disabled={saving}>
               {saving ? (
@@ -273,7 +274,7 @@ export default function ProfileScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: '#fafafa' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: Platform.OS === 'android' ? 50 : 50, paddingBottom: 12,
@@ -373,7 +374,8 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: '#e2e8f0',
   },
   modalInput: { flex: 1, fontSize: 15, color: '#1e293b', paddingVertical: 14 },
-  emailNote: { fontSize: 12, color: '#94a3b8', marginTop: 12 },
+  emailNoteRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12 },
+  emailNote: { fontSize: 12, color: '#94a3b8' },
   saveBtn: {
     backgroundColor: '#8b5cf6', borderRadius: 16, height: 52,
     alignItems: 'center', justifyContent: 'center', marginTop: 24,

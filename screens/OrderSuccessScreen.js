@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, Animated,
-  SafeAreaView, Dimensions, Platform
+  Dimensions, Platform
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
@@ -21,7 +22,7 @@ export default function OrderSuccessScreen({ navigation, route }) {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.content}>
         {/* Success Icon */}
         <Animated.View style={[styles.iconContainer, { transform: [{ scale: scaleAnim }] }]}>
@@ -89,7 +90,7 @@ export default function OrderSuccessScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff', paddingTop: Platform.OS === 'android' ? 40 : 0 },
+  container: { flex: 1, backgroundColor: '#ffffff' },
   content: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 },
   iconContainer: { marginBottom: 30 },
   iconOuter: {

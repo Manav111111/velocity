@@ -8,33 +8,29 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "backgroundColor": "#ffffff",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
+
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "package": "com.manav111.velocity"
+      "package": "com.manav111.velocity",
+      "googleServicesFile": "./google-services.json"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
+
+    "plugins": [
+      "expo-font"
+    ],
+
     "extra": {
+      "firebase": {
+        "apiKey": "AIzaSyAMox6OzfkkgaXK3qd3ep7jc7Ov5djL1Do",
+        "authDomain": "velocity-pro.firebaseapp.com",
+        "projectId": "velocity-pro",
+        "storageBucket": "velocity-pro.firebasestorage.app",
+        "messagingSenderId": "845684833636",
+        "appId": "1:845684833636:web:e5b7c50ae8b21e01f6ce71",
+        "measurementId": "G-P9HZTKTQV3"
+      },
       "eas": {
         "projectId": "e34530f9-9617-4dc4-9202-0d346d7b3bf2"
       }
-    },
-    "plugins": [
-      "expo-font"
-    ]
+    }
   }
 }
