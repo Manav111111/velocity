@@ -35,8 +35,8 @@ function CategoryArtwork({ cat }) {
 export default function CategoriesScreen({ navigation }) {
   const { categories, loading, location, cartItemCount } = useAppContext();
   const { width } = useWindowDimensions();
-  const columns = width >= 520 ? 4 : 3;
-  const tileWidth = (Math.max(width, 320) - 32 - (columns - 1) * 10) / columns;
+  const columns = 3;
+  const tileWidth = Math.floor((Math.max(width, 320) - 32 - (columns - 1) * 8) / columns);
   const totalProducts = categories.reduce((sum, cat) => sum + (cat.productCount || 0), 0);
 
   const handleCategoryPress = (cat) => {
@@ -292,27 +292,27 @@ const styles = StyleSheet.create({
   catGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
     paddingHorizontal: 16,
   },
   catCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 10,
-    padding: 7,
+    borderRadius: 9,
+    padding: 6,
     borderWidth: 1,
     borderColor: '#E5ECDC',
   },
   catImageBox: {
     width: '100%',
     aspectRatio: 1,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
     overflow: 'hidden',
   },
   categoryImage: { width: '92%', height: '92%' },
-  catName: { minHeight: 33, fontSize: 12, lineHeight: 16, fontWeight: '900', color: '#111827', textAlign: 'center' },
+  catName: { minHeight: 31, fontSize: 11, lineHeight: 15, fontWeight: '900', color: '#111827', textAlign: 'center' },
   catCount: { fontSize: 10, fontWeight: '700', color: '#718096', marginTop: 2, textAlign: 'center' },
   browseAllBtn: {
     flexDirection: 'row',

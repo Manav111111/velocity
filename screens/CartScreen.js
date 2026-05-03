@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  TextInput, Image,
+  TextInput, Image, Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -15,7 +15,7 @@ export default function CartScreen({ navigation }) {
     cartItemCount, cartTotal, location,
   } = useAppContext();
   const insets = useSafeAreaInsets();
-  const bottomInset = Math.max(insets.bottom, 0);
+  const bottomInset = Platform.OS === 'ios' ? Math.max(insets.bottom, 0) : 0;
   const [instructions, setInstructions] = useState('');
 
   const deliveryFee = cartItems.length > 0 ? 12.50 : 0;
@@ -186,7 +186,7 @@ export default function CartScreen({ navigation }) {
       </ScrollView>
 
       {hasItems && (
-        <View style={[styles.bottomBar, { paddingBottom: Math.max(bottomInset, 14) }]}>
+        <View style={[styles.bottomBar, { paddingBottom: bottomInset + 10 }]}>
           <View style={styles.bottomInfo}>
             <Text style={styles.bottomLabel}>Total</Text>
             <Text style={styles.bottomTotal}>₹{total.toFixed(2)}</Text>

@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 import { useAppContext } from '../context/AppContext';
 import {
@@ -13,29 +14,49 @@ import {
 
 const { height } = Dimensions.get('window');
 
-const DELIVERY_BLOCKS = [
-  { left: '5%', top: '12%', width: '24%', height: 34, bg: '#DDF6D5' },
-  { left: '35%', top: '8%', width: '26%', height: 46, bg: '#FFF7D6' },
-  { left: '68%', top: '13%', width: '22%', height: 36, bg: '#EAF7FF' },
-  { left: '8%', top: '45%', width: '20%', height: 48, bg: '#F0F7EA' },
-  { left: '38%', top: '48%', width: '24%', height: 38, bg: '#ECFDF5' },
-  { left: '70%', top: '50%', width: '21%', height: 44, bg: '#FFF0F3' },
-  { left: '16%', top: '74%', width: '28%', height: 36, bg: '#EDFFF8' },
-  { left: '55%', top: '76%', width: '31%', height: 34, bg: '#E8F8DE' },
-];
-
-const MAP_PINS = [
-  { left: '20%', top: '26%' },
-  { left: '78%', top: '27%' },
-  { left: '18%', top: '66%' },
-  { left: '72%', top: '68%' },
-];
+const DEFAULT_MAP_REGION = { latitude: 28.6139, longitude: 77.2090 };
 
 const ADDRESS_LABELS = [
   { id: 'home', label: 'Home', icon: 'home' },
   { id: 'work', label: 'Work', icon: 'work' },
   { id: 'other', label: 'Other', icon: 'location-on' },
 ];
+
+function getOpenStreetMapHtml(region) {
+  const latitude = Number(region?.latitude) || DEFAULT_MAP_REGION.latitude;
+  const longitude = Number(region?.longitude) || DEFAULT_MAP_REGION.longitude;
+  const delta = 0.012;
+  const bbox = [
+    longitude - delta,
+    latitude - delta,
+    longitude + delta,
+    latitude + delta,
+  ].join(',');
+  const src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${latitude},${longitude}`;
+
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <style>
+          html, body, iframe {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            overflow: hidden;
+            background: #eef7ea;
+          }
+        </style>
+      </head>
+      <body>
+        <iframe title="Delivery map" src="${src}"></iframe>
+      </body>
+    </html>
+  `;
+}
 
 export default function LocationScreen({ navigation }) {
   const { user, savedAddresses, selectAddress, activeAddressId } = useAppContext();
@@ -51,20 +72,10 @@ export default function LocationScreen({ navigation }) {
   const [landmark, setLandmark] = useState('');
   const [city, setCity] = useState('');
   const [pincode, setPincode] = useState('');
+  const [mapRegion, setMapRegion] = useState(DEFAULT_MAP_REGION);
+  const [addressCoords, setAddressCoords] = useState(null);
 
-  const pulseAnim = useRef(new Animated.Value(1)).current;
   const formSlide = useRef(new Animated.Value(height)).current;
-
-  useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.26, duration: 1000, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
-      ])
-    );
-    pulse.start();
-    return () => pulse.stop();
-  }, [pulseAnim]);
 
   useEffect(() => {
     Animated.spring(formSlide, {
@@ -83,6 +94,7 @@ export default function LocationScreen({ navigation }) {
     setLandmark('');
     setCity('');
     setPincode('');
+    setAddressCoords(null);
     setEditingAddress(null);
   };
 
@@ -100,6 +112,13 @@ export default function LocationScreen({ navigation }) {
     setLandmark(addr.landmark || '');
     setCity(addr.city || '');
     setPincode(addr.pincode || '');
+    if (addr.latitude && addr.longitude) {
+      const coords = { latitude: addr.latitude, longitude: addr.longitude };
+      setAddressCoords(coords);
+      setMapRegion(coords);
+    } else {
+      setAddressCoords(null);
+    }
     setShowForm(true);
   };
 
@@ -114,6 +133,9 @@ export default function LocationScreen({ navigation }) {
 
       const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
       const { latitude, longitude } = loc.coords;
+      const coords = { latitude, longitude };
+      setMapRegion(coords);
+      setAddressCoords(coords);
       const reverseGeocode = await Location.reverseGeocodeAsync({ latitude, longitude });
 
       if (reverseGeocode && reverseGeocode.length > 0) {
@@ -160,6 +182,8 @@ export default function LocationScreen({ navigation }) {
       landmark: landmark.trim(),
       city: city.trim(),
       pincode: pincode.trim(),
+      latitude: addressCoords?.latitude || null,
+      longitude: addressCoords?.longitude || null,
       isDefault: savedAddresses.length === 0 && !editingAddress,
     };
 
@@ -210,6 +234,9 @@ export default function LocationScreen({ navigation }) {
   };
 
   const handleSelectAddress = (addr) => {
+    if (addr.latitude && addr.longitude) {
+      setMapRegion({ latitude: addr.latitude, longitude: addr.longitude });
+    }
     selectAddress(addr);
     navigation.goBack();
   };
@@ -233,26 +260,20 @@ export default function LocationScreen({ navigation }) {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.mapCard}>
-          <View style={styles.mapBg}>
-            <View style={styles.roadMainH} />
-            <View style={styles.roadMainV} />
-            <View style={styles.roadSoftH} />
-            <View style={styles.roadSoftV} />
-            {DELIVERY_BLOCKS.map((block, index) => (
-              <View key={index} style={[styles.mapBlock, block]} />
-            ))}
-            {MAP_PINS.map((pin, index) => (
-              <View key={index} style={[styles.smallPin, pin]}>
-                <MaterialIcons name="place" size={16} color="#16803C" />
-              </View>
-            ))}
-            <View style={styles.centerPinWrapper}>
-              <Animated.View style={[styles.pinPulseOuter, { transform: [{ scale: pulseAnim }] }]} />
-              <View style={styles.pinDot} />
-              <View style={styles.centerPin}>
-                <MaterialIcons name="my-location" size={24} color="#ffffff" />
-              </View>
-            </View>
+          <View style={styles.realMap}>
+            <WebView
+              key={`${mapRegion.latitude}-${mapRegion.longitude}`}
+              source={{ html: getOpenStreetMapHtml(mapRegion) }}
+              originWhitelist={['*']}
+              javaScriptEnabled
+              domStorageEnabled
+              startInLoadingState
+              renderLoading={() => (
+                <View style={styles.mapLoading}>
+                  <ActivityIndicator size="small" color="#16803C" />
+                </View>
+              )}
+            />
             <View style={styles.mapTopChip}>
               <MaterialIcons name="bolt" size={14} color="#166534" />
               <Text style={styles.mapTopChipText}>Serviceable delivery zone</Text>
@@ -498,45 +519,19 @@ const styles = StyleSheet.create({
   mapCard: {
     margin: 16,
     marginBottom: 12,
-    height: 224,
+    height: 258,
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#CDEFC0',
     backgroundColor: '#ffffff',
   },
-  mapBg: { flex: 1, backgroundColor: '#F4FAF0', position: 'relative' },
-  roadMainH: { position: 'absolute', left: -20, right: -20, top: '42%', height: 24, backgroundColor: '#ffffff', transform: [{ rotate: '-8deg' }] },
-  roadMainV: { position: 'absolute', top: -20, bottom: -20, left: '48%', width: 24, backgroundColor: '#ffffff', transform: [{ rotate: '10deg' }] },
-  roadSoftH: { position: 'absolute', left: -12, right: -12, top: '68%', height: 12, backgroundColor: 'rgba(255,255,255,0.78)', transform: [{ rotate: '5deg' }] },
-  roadSoftV: { position: 'absolute', top: -12, bottom: -12, left: '24%', width: 12, backgroundColor: 'rgba(255,255,255,0.78)', transform: [{ rotate: '-5deg' }] },
-  mapBlock: { position: 'absolute', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(22,128,60,0.08)' },
-  smallPin: {
-    position: 'absolute',
-    width: 26,
-    height: 26,
-    borderRadius: 8,
-    backgroundColor: '#ffffff',
+  realMap: { flex: 1, backgroundColor: '#EEF7EA', position: 'relative' },
+  mapLoading: {
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#BBF7D0',
-  },
-  centerPinWrapper: { position: 'absolute', left: '50%', top: '50%', width: 62, height: 62, marginLeft: -31, marginTop: -31, alignItems: 'center', justifyContent: 'center' },
-  pinPulseOuter: { position: 'absolute', width: 62, height: 62, borderRadius: 31, backgroundColor: 'rgba(22,128,60,0.15)' },
-  pinDot: { position: 'absolute', width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(22,128,60,0.20)' },
-  centerPin: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
-    backgroundColor: '#16803C',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#166534',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.24,
-    shadowRadius: 14,
-    elevation: 10,
+    backgroundColor: '#EEF7EA',
   },
   mapTopChip: {
     position: 'absolute',

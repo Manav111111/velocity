@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, ScrollView,
-  FlatList, Image,
+  FlatList, Image, Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }) {
     toggleWishlist, isInWishlist, cartItemCount, cartTotal,
   } = useAppContext();
   const insets = useSafeAreaInsets();
-  const bottomInset = Math.max(insets.bottom, 0);
+  const bottomInset = Platform.OS === 'ios' ? Math.max(insets.bottom, 0) : 0;
 
   const handleProductPress = (item) => navigation.navigate('ProductDetail', { product: item });
   const handleCategoryPress = (cat) =>
@@ -264,7 +264,7 @@ export default function HomeScreen({ navigation }) {
 
       {cartItemCount > 0 && (
         <TouchableOpacity
-          style={[styles.floatingCart, { bottom: bottomInset + 10 }]}
+          style={[styles.floatingCart, { bottom: bottomInset + 4 }]}
           onPress={() => navigation.navigate('CartTab')}
           activeOpacity={0.9}
         >
