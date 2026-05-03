@@ -7,7 +7,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAppContext } from '../context/AppContext';
 
-const fallbackItemImage = require('../assets/vegetables.png');
+const fallbackItemImage = { uri: 'https://via.placeholder.com/100' };
 
 export default function CartScreen({ navigation }) {
   const {

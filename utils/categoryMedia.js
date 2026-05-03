@@ -1,7 +1,7 @@
 const CATEGORY_IMAGES = {
-  avocado: require('../assets/avocado.png'),
-  milk: require('../assets/milk.png'),
-  vegetables: require('../assets/vegetables.png'),
+  avocado: { uri: 'https://cdn-icons-png.flaticon.com/512/2909/2909894.png' },
+  milk: { uri: 'https://cdn-icons-png.flaticon.com/512/869/869664.png' },
+  vegetables: { uri: 'https://cdn-icons-png.flaticon.com/512/2329/2329865.png' },
 };
 
 function fieldValue(value) {

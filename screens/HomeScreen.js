@@ -11,9 +11,9 @@ import CategoryGrid from '../components/CategoryGrid';
 import ProductCard from '../components/ProductCard';
 import SkeletonLoader from '../components/SkeletonLoader';
 
-const vegetablesImg = require('../assets/vegetables.png');
-const milkImg = require('../assets/milk.png');
-const avocadoImg = require('../assets/avocado.png');
+const vegetablesImg = { uri: 'https://via.placeholder.com/150' };
+const milkImg = { uri: 'https://via.placeholder.com/150' };
+const avocadoImg = { uri: 'https://via.placeholder.com/150' };
 
 export default function HomeScreen({ navigation }) {
   const {
