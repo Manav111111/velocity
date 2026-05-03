@@ -103,13 +103,13 @@ export default function CheckoutScreen({ navigation, route }) {
         <View style={styles.stepLabels}>
           <Text style={styles.stepLabel}>Cart</Text>
           <Text style={styles.stepLabel}>Address</Text>
-          <Text style={[styles.stepLabel, { color: '#b6a0ff' }]}>Payment</Text>
+          <Text style={[styles.stepLabel, { color: '#CDEFC0' }]}>Payment</Text>
         </View>
 
         {/* Delivery Address */}
         <Text style={styles.sectionTitle}>DELIVERY ADDRESS</Text>
         <TouchableOpacity style={styles.addressCard} onPress={() => navigation.navigate('Location')}>
-          <MaterialIcons name="location-on" size={22} color="#8b5cf6" />
+          <MaterialIcons name="location-on" size={22} color="#16803C" />
           <View style={styles.addressInfo}>
             <Text style={styles.addressText} numberOfLines={2}>{location}</Text>
             <Text style={styles.changeText}>Tap to change address</Text>
@@ -121,7 +121,7 @@ export default function CheckoutScreen({ navigation, route }) {
         <Text style={styles.sectionTitle}>RECEIVER DETAILS</Text>
         <View style={styles.receiverCard}>
           <View style={styles.inputGroup}>
-            <MaterialIcons name="person" size={18} color="#8b5cf6" style={styles.inputIcon} />
+            <MaterialIcons name="person" size={18} color="#16803C" style={styles.inputIcon} />
             <TextInput
               style={styles.receiverInput}
               placeholder="Receiver full name"
@@ -132,7 +132,7 @@ export default function CheckoutScreen({ navigation, route }) {
           </View>
           <View style={styles.inputDivider} />
           <View style={styles.inputGroup}>
-            <MaterialIcons name="phone" size={18} color="#8b5cf6" style={styles.inputIcon} />
+            <MaterialIcons name="phone" size={18} color="#16803C" style={styles.inputIcon} />
             <TextInput
               style={styles.receiverInput}
               placeholder="10-digit phone number"
@@ -161,13 +161,13 @@ export default function CheckoutScreen({ navigation, route }) {
         <Text style={styles.sectionTitle}>PAYMENT METHOD</Text>
         <View style={[styles.paymentOption, styles.paymentActive]}>
           <View style={styles.paymentIconBox}>
-            <MaterialIcons name="payments" size={22} color="#8b5cf6" />
+            <MaterialIcons name="payments" size={22} color="#16803C" />
           </View>
           <View style={styles.paymentInfo}>
             <Text style={styles.paymentTitle}>Cash on Delivery</Text>
             <Text style={styles.paymentDesc}>Pay when your order arrives at your door</Text>
           </View>
-          <MaterialIcons name="radio-button-checked" size={22} color="#8b5cf6" />
+          <MaterialIcons name="radio-button-checked" size={22} color="#16803C" />
         </View>
         <View style={styles.codNote}>
           <MaterialIcons name="info-outline" size={14} color="#64748b" />
@@ -234,15 +234,15 @@ const styles = StyleSheet.create({
   },
   stepDone: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: '#8b5cf6', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#16803C', alignItems: 'center', justifyContent: 'center',
   },
   stepCurrent: {
     width: 28, height: 28, borderRadius: 14,
-    backgroundColor: 'rgba(139,92,246,0.1)', alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: '#8b5cf6',
+    backgroundColor: 'rgba(22,128,60,0.1)', alignItems: 'center', justifyContent: 'center',
+    borderWidth: 2, borderColor: '#16803C',
   },
-  stepNum: { fontSize: 12, fontWeight: 'bold', color: '#8b5cf6' },
-  stepLine: { flex: 1, height: 2, backgroundColor: '#8b5cf6', marginHorizontal: 8 },
+  stepNum: { fontSize: 12, fontWeight: 'bold', color: '#16803C' },
+  stepLine: { flex: 1, height: 2, backgroundColor: '#16803C', marginHorizontal: 8 },
   stepLabels: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 50, marginTop: 8, marginBottom: 25 },
   stepLabel: { fontSize: 11, fontWeight: '600', color: '#64748b' },
   sectionTitle: {
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
   addressInfo: { flex: 1 },
   addressText: { fontSize: 14, fontWeight: '700', color: '#1e293b', marginBottom: 2, lineHeight: 20 },
-  changeText: { fontSize: 11, color: '#8b5cf6' },
+  changeText: { fontSize: 11, color: '#16803C' },
 
   // Receiver card
   receiverCard: {
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', paddingVertical: 8,
     borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
   },
-  itemQty: { fontSize: 13, fontWeight: 'bold', color: '#8b5cf6', width: 32 },
+  itemQty: { fontSize: 13, fontWeight: 'bold', color: '#16803C', width: 32 },
   itemName: { flex: 1, fontSize: 14, color: '#1e293b', fontWeight: '600' },
   itemTotal: { fontSize: 14, fontWeight: '700', color: '#1e293b' },
 
@@ -287,9 +287,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 10,
     borderWidth: 1, borderColor: '#e2e8f0',
   },
-  paymentActive: { borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.05)' },
+  paymentActive: { borderColor: '#16803C', backgroundColor: 'rgba(22,128,60,0.05)' },
   paymentIconBox: {
-    width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(139,92,246,0.1)',
+    width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(22,128,60,0.1)',
     alignItems: 'center', justifyContent: 'center',
   },
   paymentInfo: { flex: 1 },
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     paddingTop: 12, marginTop: 4, marginBottom: 0,
   },
   totalLabel: { fontSize: 16, fontWeight: '800', color: '#1e293b' },
-  totalValue: { fontSize: 20, fontWeight: '900', color: '#8b5cf6' },
+  totalValue: { fontSize: 20, fontWeight: '900', color: '#16803C' },
 
   // Bottom bar
   bottomBar: {
@@ -325,12 +325,12 @@ const styles = StyleSheet.create({
   },
   bottomInfo: { flex: 1 },
   bottomLabel: { fontSize: 11, color: '#64748b' },
-  bottomTotal: { fontSize: 20, fontWeight: '900', color: '#8b5cf6' },
+  bottomTotal: { fontSize: 20, fontWeight: '900', color: '#16803C' },
   placeBtn: {
     flexDirection: 'row', gap: 8,
-    backgroundColor: '#8b5cf6', borderRadius: 16, paddingHorizontal: 22, height: 52,
+    backgroundColor: '#16803C', borderRadius: 16, paddingHorizontal: 22, height: 52,
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#8b5cf6', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 12, elevation: 6,
+    shadowColor: '#16803C', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 12, elevation: 6,
   },
   placeBtnText: { fontSize: 14, fontWeight: '800', color: '#ffffff', letterSpacing: 0.5 },
 });

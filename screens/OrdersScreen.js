@@ -12,13 +12,13 @@ const { width } = Dimensions.get('window');
 const STATUS_CONFIG = {
   confirmed:       { color: '#2563eb', label: 'CONFIRMED',  icon: 'check-circle-outline' },
   preparing:       { color: '#d97706', label: 'PREPARING',  icon: 'restaurant' },
-  out_for_delivery:{ color: '#8b5cf6', label: 'ON THE WAY', icon: 'delivery-dining' },
+  out_for_delivery:{ color: '#16803C', label: 'ON THE WAY', icon: 'delivery-dining' },
   delivered:       { color: '#059669', label: 'DELIVERED',  icon: 'done-all' },
   cancelled:       { color: '#dc2626', label: 'CANCELLED',  icon: 'cancel' },
 };
 
 function getStatus(status) {
-  return STATUS_CONFIG[status] || { color: '#6d758c', label: (status || 'PENDING').toUpperCase(), icon: 'schedule' };
+  return STATUS_CONFIG[status] || { color: '#64748B', label: (status || 'PENDING').toUpperCase(), icon: 'schedule' };
 }
 
 export default function OrdersScreen({ navigation }) {
@@ -34,7 +34,7 @@ export default function OrdersScreen({ navigation }) {
   if (!user) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', paddingTop: 50 }]}>
-        <MaterialIcons name="lock-outline" size={56} color="#40485d" />
+        <MaterialIcons name="lock-outline" size={56} color="#64748B" />
         <Text style={styles.emptyTitle}>Login Required</Text>
         <Text style={styles.emptySubtitle}>Please login to view your orders</Text>
         <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate('Login')}>
@@ -53,14 +53,14 @@ export default function OrdersScreen({ navigation }) {
             <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 6 }}>
               <MaterialIcons name="arrow-back" size={22} color="#1e293b" />
             </TouchableOpacity>
-            <MaterialIcons name="bolt" size={20} color="#8b5cf6" />
+            <MaterialIcons name="bolt" size={20} color="#16803C" />
             <Text style={styles.headerBrand}>Velocity</Text>
           </View>
           <TouchableOpacity
             style={styles.avatarBtn}
             onPress={() => navigation.navigate('Home', { screen: 'ProfileTab' })}
           >
-            <MaterialIcons name="person" size={20} color="#8b5cf6" />
+            <MaterialIcons name="person" size={20} color="#16803C" />
           </TouchableOpacity>
         </View>
 
@@ -120,10 +120,10 @@ export default function OrdersScreen({ navigation }) {
 
         {/* Content */}
         {loading ? (
-          <ActivityIndicator size="large" color="#8b5cf6" style={{ marginTop: 40 }} />
+          <ActivityIndicator size="large" color="#16803C" style={{ marginTop: 40 }} />
         ) : displayOrders.length === 0 ? (
           <View style={styles.emptyState}>
-            <MaterialIcons name="receipt-long" size={60} color="#40485d" />
+            <MaterialIcons name="receipt-long" size={60} color="#64748B" />
             <Text style={styles.emptyTitle}>No Orders Yet</Text>
             <Text style={styles.emptySubtitle}>Your order history will appear here</Text>
             <TouchableOpacity style={styles.shopBtn} onPress={() => navigation.navigate('Home', { screen: 'HomeTab' })}>
@@ -175,17 +175,17 @@ export default function OrdersScreen({ navigation }) {
                 {/* Bottom meta */}
                 <View style={styles.orderFooter}>
                   <View style={styles.footerItem}>
-                    <MaterialIcons name="payments" size={13} color="#6d758c" />
+                    <MaterialIcons name="payments" size={13} color="#64748B" />
                     <Text style={styles.footerText}>COD</Text>
                   </View>
                   {Boolean(order.receiverName) && (
                     <View style={styles.footerItem}>
-                      <MaterialIcons name="person" size={13} color="#6d758c" />
+                      <MaterialIcons name="person" size={13} color="#64748B" />
                       <Text style={styles.footerText}>{order.receiverName}</Text>
                     </View>
                   )}
                   <View style={styles.footerItem}>
-                    <MaterialIcons name="location-on" size={13} color="#6d758c" />
+                    <MaterialIcons name="location-on" size={13} color="#64748B" />
                     <Text style={styles.footerText} numberOfLines={1}>
                       {order.address || '—'}
                     </Text>
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   headerBrand: { fontSize: 16, fontWeight: '800', color: '#1e293b' },
   avatarBtn: {
     width: 38, height: 38, borderRadius: 19,
-    backgroundColor: 'rgba(139,92,246,0.1)', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(22,128,60,0.1)', alignItems: 'center', justifyContent: 'center',
   },
   titleSection: { paddingHorizontal: 20, marginBottom: 18 },
   trackingLabel: { fontSize: 10, fontWeight: 'bold', color: '#64748b', letterSpacing: 2, marginBottom: 6 },
@@ -222,15 +222,15 @@ const styles = StyleSheet.create({
     flex: 1, backgroundColor: '#f8fafc', borderRadius: 14, padding: 14,
     alignItems: 'center', borderWidth: 1, borderColor: '#e2e8f0',
   },
-  statHighlight: { backgroundColor: '#f1f5f9', borderColor: '#8b5cf6' },
+  statHighlight: { backgroundColor: '#f1f5f9', borderColor: '#16803C' },
   statValue: { fontSize: 22, fontWeight: '800', color: '#1e293b', marginBottom: 4 },
-  statValueHighlight: { fontSize: 18, fontWeight: '800', color: '#8b5cf6', marginBottom: 4 },
+  statValueHighlight: { fontSize: 18, fontWeight: '800', color: '#16803C', marginBottom: 4 },
   statLabel: { fontSize: 8, fontWeight: 'bold', color: '#64748b', letterSpacing: 1 },
 
   // Tabs
   tabRow: { flexDirection: 'row', paddingHorizontal: 20, marginBottom: 16, gap: 10 },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 18, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: '#e2e8f0' },
-  tabActive: { backgroundColor: '#8b5cf6', borderColor: '#8b5cf6' },
+  tabActive: { backgroundColor: '#16803C', borderColor: '#16803C' },
   tabText: { fontSize: 13, fontWeight: '600', color: '#64748b' },
   tabTextActive: { color: '#ffffff', fontWeight: '700' },
   tabBadge: {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   orderMeta: {},
   orderId: { fontSize: 10, fontWeight: 'bold', color: '#64748b', letterSpacing: 0.5, marginBottom: 4 },
   orderItems: { fontSize: 18, fontWeight: '800', color: '#1e293b' },
-  orderTotal: { fontSize: 22, fontWeight: '900', color: '#8b5cf6' },
+  orderTotal: { fontSize: 22, fontWeight: '900', color: '#16803C' },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 16, paddingTop: 8 },
   orderTag: { backgroundColor: '#f1f5f9', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, maxWidth: 160 },
   orderTagText: { fontSize: 11, color: '#64748b' },
@@ -275,8 +275,8 @@ const styles = StyleSheet.create({
   emptyState: { alignItems: 'center', paddingVertical: 60 },
   emptyTitle: { fontSize: 20, fontWeight: '800', color: '#1e293b', marginTop: 16 },
   emptySubtitle: { fontSize: 13, color: '#64748b', marginTop: 6 },
-  shopBtn: { marginTop: 20, backgroundColor: '#8b5cf6', paddingHorizontal: 30, paddingVertical: 14, borderRadius: 20 },
+  shopBtn: { marginTop: 20, backgroundColor: '#16803C', paddingHorizontal: 30, paddingVertical: 14, borderRadius: 20 },
   shopBtnText: { fontSize: 14, fontWeight: '800', color: '#ffffff' },
-  loginBtn: { marginTop: 20, backgroundColor: '#8b5cf6', paddingHorizontal: 30, paddingVertical: 14, borderRadius: 20 },
+  loginBtn: { marginTop: 20, backgroundColor: '#16803C', paddingHorizontal: 30, paddingVertical: 14, borderRadius: 20 },
   loginBtnText: { fontSize: 14, fontWeight: '800', color: '#ffffff' },
 });

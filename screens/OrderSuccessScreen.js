@@ -57,7 +57,7 @@ export default function OrderSuccessScreen({ navigation, route }) {
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>EST. DELIVERY</Text>
               <View style={styles.deliveryBadge}>
-                <MaterialIcons name="bolt" size={14} color="#ff6e84" />
+                <MaterialIcons name="bolt" size={14} color="#DC2626" />
                 <Text style={styles.deliveryText}>10-15 mins</Text>
               </View>
             </View>
@@ -65,7 +65,7 @@ export default function OrderSuccessScreen({ navigation, route }) {
 
           {/* Tracking Info */}
           <View style={styles.trackingCard}>
-            <MaterialIcons name="local-shipping" size={24} color="#b6a0ff" />
+            <MaterialIcons name="local-shipping" size={24} color="#CDEFC0" />
             <Text style={styles.trackingText}>You can track your order in the Orders tab</Text>
           </View>
         </Animated.View>
@@ -76,7 +76,7 @@ export default function OrderSuccessScreen({ navigation, route }) {
         <TouchableOpacity style={styles.ordersBtn} onPress={() => {
           navigation.reset({ index: 1, routes: [{ name: 'Home' }, { name: 'Orders' }] });
         }}>
-          <MaterialIcons name="receipt-long" size={18} color="#8b5cf6" />
+          <MaterialIcons name="receipt-long" size={18} color="#16803C" />
           <Text style={styles.ordersBtnText}>View Orders</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.homeBtn} onPress={() => {
@@ -94,11 +94,11 @@ const styles = StyleSheet.create({
   content: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 },
   iconContainer: { marginBottom: 30 },
   iconOuter: {
-    width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(139,92,246,0.1)',
+    width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(22,128,60,0.1)',
     alignItems: 'center', justifyContent: 'center',
   },
   iconInner: {
-    width: 90, height: 90, borderRadius: 45, backgroundColor: '#8b5cf6',
+    width: 90, height: 90, borderRadius: 45, backgroundColor: '#16803C',
     alignItems: 'center', justifyContent: 'center',
   },
   successTitle: { fontSize: 28, fontWeight: '900', color: '#1e293b', marginBottom: 10 },
@@ -110,26 +110,26 @@ const styles = StyleSheet.create({
   detailRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8 },
   detailLabel: { fontSize: 10, fontWeight: 'bold', color: '#64748b', letterSpacing: 1 },
   detailValue: { fontSize: 14, fontWeight: '700', color: '#1e293b' },
-  detailValueBig: { fontSize: 20, fontWeight: '900', color: '#8b5cf6' },
+  detailValueBig: { fontSize: 20, fontWeight: '900', color: '#16803C' },
   divider: { height: 1, backgroundColor: '#e2e8f0', marginVertical: 4 },
   deliveryBadge: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   deliveryText: { fontSize: 13, fontWeight: 'bold', color: '#ef4444' },
   trackingCard: {
     width: width - 40, flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: 'rgba(139,92,246,0.05)', borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: 'rgba(139,92,246,0.1)',
+    backgroundColor: 'rgba(22,128,60,0.05)', borderRadius: 16, padding: 16,
+    borderWidth: 1, borderColor: 'rgba(22,128,60,0.1)',
   },
   trackingText: { fontSize: 13, color: '#64748b', flex: 1 },
   bottomActions: { paddingHorizontal: 20, paddingBottom: 30, gap: 12 },
   ordersBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    borderWidth: 1.5, borderColor: '#8b5cf6', borderRadius: 20, height: 52,
+    borderWidth: 1.5, borderColor: '#16803C', borderRadius: 20, height: 52,
   },
-  ordersBtnText: { fontSize: 15, fontWeight: '700', color: '#8b5cf6' },
+  ordersBtnText: { fontSize: 15, fontWeight: '700', color: '#16803C' },
   homeBtn: {
-    backgroundColor: '#8b5cf6', borderRadius: 20, height: 52,
+    backgroundColor: '#16803C', borderRadius: 20, height: 52,
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#8b5cf6', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 12, elevation: 6,
+    shadowColor: '#16803C', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 12, elevation: 6,
   },
   homeBtnText: { fontSize: 15, fontWeight: '800', color: '#ffffff' },
 });

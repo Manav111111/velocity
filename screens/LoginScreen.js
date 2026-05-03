@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TextInput, TouchableOpacity,
-  Dimensions, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator
+  KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { signInWithGoogle } from '../services/googleAuthService';
-
-const { width } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleGoogleLogin = () => signInWithGoogle(navigation);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -39,31 +37,50 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    try {
+      await signInWithGoogle(navigation);
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          {/* Top Section */}
-          <View style={styles.topSection}>
-            <View style={styles.logoIcon}>
-              <MaterialIcons name="bolt" size={32} color="#8b5cf6" />
+          <View style={styles.brandHeader}>
+            <View style={styles.logoBox}>
+              <MaterialIcons name="shopping-bag" size={30} color="#16803C" />
             </View>
-            <Text style={styles.brandTitle}>Velocity Pro</Text>
-            <Text style={styles.brandSubtitle}>ELEVATE YOUR WORKFLOW</Text>
+            <Text style={styles.brandTitle}>Velocity</Text>
+            <Text style={styles.brandSubtitle}>Fresh groceries delivered fast</Text>
           </View>
 
-          {/* Login Card */}
-          <View style={styles.loginCard}>
-            <Text style={styles.welcomeTitle}>Welcome Back</Text>
-            <Text style={styles.welcomeSubtitle}>Please enter your details to continue.</Text>
+          <View style={styles.promiseStrip}>
+            <View style={styles.promiseItem}>
+              <MaterialIcons name="bolt" size={15} color="#166534" />
+              <Text style={styles.promiseText}>10 min delivery</Text>
+            </View>
+            <View style={styles.promiseDivider} />
+            <View style={styles.promiseItem}>
+              <MaterialIcons name="verified" size={15} color="#166534" />
+              <Text style={styles.promiseText}>Fresh daily</Text>
+            </View>
+          </View>
 
-            {/* Email Field */}
-            <Text style={styles.fieldLabel}>EMAIL OR PHONE NUMBER</Text>
+          <View style={styles.loginCard}>
+            <Text style={styles.welcomeTitle}>Welcome back</Text>
+            <Text style={styles.welcomeSubtitle}>Login to continue shopping fresh essentials.</Text>
+
+            <Text style={styles.fieldLabel}>Email</Text>
             <View style={styles.inputContainer}>
+              <MaterialIcons name="mail-outline" size={18} color="#16803C" />
               <TextInput
                 style={styles.input}
-                placeholder="name@company.com"
-                placeholderTextColor="#40485d"
+                placeholder="name@example.com"
+                placeholderTextColor="#94A3B8"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -71,102 +88,155 @@ export default function LoginScreen({ navigation }) {
               />
             </View>
 
-            {/* Password Field */}
-            <Text style={styles.fieldLabel}>PASSWORD</Text>
+            <Text style={styles.fieldLabel}>Password</Text>
             <View style={styles.inputContainer}>
+              <MaterialIcons name="lock-outline" size={18} color="#16803C" />
               <TextInput
-                style={[styles.input, { flex: 1 }]}
+                style={styles.input}
                 placeholder="Enter password"
-                placeholderTextColor="#40485d"
+                placeholderTextColor="#94A3B8"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
               />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                <MaterialIcons name={showPassword ? "visibility" : "visibility-off"} size={20} color="#6d758c" />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon} activeOpacity={0.78}>
+                <MaterialIcons name={showPassword ? 'visibility' : 'visibility-off'} size={20} color="#64748B" />
               </TouchableOpacity>
             </View>
 
-            {/* Continue Button */}
-            <TouchableOpacity style={styles.continueButton} onPress={handleLogin} disabled={loading}>
+            <TouchableOpacity style={styles.continueButton} onPress={handleLogin} disabled={loading} activeOpacity={0.88}>
               {loading ? (
-                <ActivityIndicator color="#060e20" />
+                <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.continueText}>Continue</Text>
+                <>
+                  <Text style={styles.continueText}>Login</Text>
+                  <MaterialIcons name="arrow-forward" size={18} color="#ffffff" />
+                </>
               )}
             </TouchableOpacity>
 
-            {/* Divider */}
-            <View style={styles.dividerContainer}>
+            <View style={styles.dividerRow}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR LOGIN WITH</Text>
+              <Text style={styles.dividerText}>or</Text>
               <View style={styles.dividerLine} />
             </View>
 
-            {/* Social Login Button */}
-            <View style={styles.socialContainer}>
-              <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin}>
-                <Text style={styles.socialIcon}>G</Text>
-                <Text style={styles.socialLabel}>GOOGLE</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={handleGoogleLogin}
+              disabled={googleLoading}
+              activeOpacity={0.86}
+            >
+              {googleLoading ? (
+                <ActivityIndicator color="#16803C" />
+              ) : (
+                <>
+                  <Text style={styles.googleMark}>G</Text>
+                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                </>
+              )}
+            </TouchableOpacity>
           </View>
 
-          {/* Footer */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>
-              New here?  <Text style={styles.footerLink} onPress={() => navigation.navigate('Signup')}>Create Account</Text>
+              New here? <Text style={styles.footerLink} onPress={() => navigation.navigate('Signup')}>Create account</Text>
             </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
-  scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40 },
-  topSection: { alignItems: 'center', marginTop: 80, marginBottom: 40 },
-  logoIcon: {
-    width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(139,92,246,0.1)',
-    alignItems: 'center', justifyContent: 'center', marginBottom: 16,
+  flex: { flex: 1 },
+  container: { flex: 1, backgroundColor: '#F6F8F4' },
+  scrollContent: { flexGrow: 1, paddingHorizontal: 16, paddingBottom: 42 },
+  brandHeader: { alignItems: 'center', paddingTop: 54, paddingBottom: 18 },
+  logoBox: {
+    width: 62,
+    height: 62,
+    borderRadius: 12,
+    backgroundColor: '#E8F8DE',
+    borderWidth: 1,
+    borderColor: '#CDEFC0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
   },
-  brandTitle: { fontSize: 28, fontWeight: '900', color: '#1e293b', marginBottom: 6 },
-  brandSubtitle: { fontSize: 10, fontWeight: 'bold', color: '#64748b', letterSpacing: 2.5 },
+  brandTitle: { fontSize: 32, fontWeight: '900', color: '#111827', letterSpacing: 0 },
+  brandSubtitle: { fontSize: 13, fontWeight: '700', color: '#64748B', marginTop: 4 },
+  promiseStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 44,
+    marginBottom: 14,
+    borderRadius: 8,
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+  },
+  promiseItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
+  promiseDivider: { width: 1, height: 22, backgroundColor: '#BBF7D0' },
+  promiseText: { fontSize: 12, fontWeight: '900', color: '#166534' },
   loginCard: {
-    backgroundColor: '#ffffff', borderRadius: 24, padding: 24,
-    borderWidth: 1, borderColor: '#e2e8f0',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.05, shadowRadius: 20, elevation: 5,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E5ECDC',
   },
-  welcomeTitle: { fontSize: 24, fontWeight: '800', color: '#1e293b', marginBottom: 6 },
-  welcomeSubtitle: { fontSize: 14, color: '#64748b', marginBottom: 24 },
-  fieldLabel: { fontSize: 10, fontWeight: 'bold', color: '#64748b', letterSpacing: 1.5, marginBottom: 8, marginTop: 8 },
+  welcomeTitle: { fontSize: 24, fontWeight: '900', color: '#111827', marginBottom: 6 },
+  welcomeSubtitle: { fontSize: 13, lineHeight: 19, fontWeight: '700', color: '#64748B', marginBottom: 18 },
+  fieldLabel: { fontSize: 12, fontWeight: '900', color: '#334155', marginBottom: 8, marginTop: 8 },
   inputContainer: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#f8fafc', borderRadius: 14, paddingHorizontal: 16, height: 52,
-    borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 12,
+    height: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 8,
+    paddingHorizontal: 13,
+    borderWidth: 1,
+    borderColor: '#E4EADF',
+    marginBottom: 10,
   },
-  input: { flex: 1, fontSize: 15, color: '#1e293b' },
+  input: { flex: 1, fontSize: 15, fontWeight: '700', color: '#111827' },
   eyeIcon: { padding: 4 },
   continueButton: {
-    backgroundColor: '#8b5cf6', borderRadius: 14, height: 52,
-    alignItems: 'center', justifyContent: 'center', marginTop: 8, marginBottom: 20,
-    shadowColor: '#8b5cf6', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 12, elevation: 6,
+    height: 52,
+    borderRadius: 8,
+    backgroundColor: '#16803C',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 12,
+    shadowColor: '#166534',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.22,
+    shadowRadius: 14,
+    elevation: 10,
   },
-  continueText: { fontSize: 16, fontWeight: '700', color: '#ffffff' },
-  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#e2e8f0' },
-  dividerText: { fontSize: 10, fontWeight: 'bold', color: '#94a3b8', letterSpacing: 1, marginHorizontal: 12 },
-  socialContainer: { width: '100%' },
-  socialButton: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#ffffff', borderRadius: 14, height: 48, gap: 8,
-    borderWidth: 1, borderColor: '#e2e8f0',
+  continueText: { fontSize: 16, fontWeight: '900', color: '#ffffff' },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 16 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#E5ECDC' },
+  dividerText: { fontSize: 12, fontWeight: '900', color: '#94A3B8' },
+  googleButton: {
+    height: 50,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#E5ECDC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 10,
   },
-  socialIcon: { fontSize: 16, fontWeight: 'bold', color: '#f4c20d' },
-  socialLabel: { fontSize: 12, fontWeight: 'bold', color: '#1e293b', letterSpacing: 0.5 },
-  footer: { alignItems: 'center', marginTop: 28 },
-  footerText: { fontSize: 14, color: '#64748b' },
-  footerLink: { color: '#8b5cf6', fontWeight: '600' },
+  googleMark: { fontSize: 18, fontWeight: '900', color: '#EA4335' },
+  googleButtonText: { fontSize: 14, fontWeight: '900', color: '#111827' },
+  footer: { alignItems: 'center', marginTop: 24 },
+  footerText: { fontSize: 14, fontWeight: '700', color: '#64748B' },
+  footerLink: { color: '#16803C', fontWeight: '900' },
 });

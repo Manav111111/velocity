@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import {
   StyleSheet, Text, View, TextInput, TouchableOpacity,
-  Dimensions, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator
+  KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import { signInWithGoogle } from '../services/googleAuthService';
-
-const { width } = Dimensions.get('window');
 
 export default function SignupScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -18,8 +17,7 @@ export default function SignupScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleGoogleSignup = () => signInWithGoogle(navigation);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleSignup = async () => {
     if (!fullName || !email || !password) {
@@ -35,10 +33,7 @@ export default function SignupScreen({ navigation }) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Update display name
       await updateProfile(user, { displayName: fullName });
-
-      // Save user data to Firestore
       await setDoc(doc(db, 'users', user.uid), {
         fullName,
         email,
@@ -60,38 +55,49 @@ export default function SignupScreen({ navigation }) {
     }
   };
 
+  const handleGoogleSignup = async () => {
+    setGoogleLoading(true);
+    try {
+      await signInWithGoogle(navigation);
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.flex}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          {/* Top Section */}
-          <View style={styles.topSection}>
-            <Text style={styles.brandName}>V E L O C I T Y   P R O</Text>
-            <Text style={styles.pageTitle}>Create Account</Text>
-            <Text style={styles.pageSubtitle}>Join our exclusive network today.</Text>
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.82}>
+              <MaterialIcons name="arrow-back" size={21} color="#16803C" />
+            </TouchableOpacity>
+            <View style={styles.headerCopy}>
+              <Text style={styles.brandTitle}>Create account</Text>
+              <Text style={styles.brandSubtitle}>Get fresh groceries delivered quickly.</Text>
+            </View>
           </View>
 
-          {/* Form */}
-          <View style={styles.formSection}>
-            {/* Full Name */}
-            <Text style={styles.fieldLabel}>FULL NAME</Text>
+          <View style={styles.formCard}>
+            <Text style={styles.fieldLabel}>Full name</Text>
             <View style={styles.inputContainer}>
+              <MaterialIcons name="person-outline" size={18} color="#16803C" />
               <TextInput
                 style={styles.input}
-                placeholder="John Doe"
-                placeholderTextColor="#40485d"
+                placeholder="Your full name"
+                placeholderTextColor="#94A3B8"
                 value={fullName}
                 onChangeText={setFullName}
               />
             </View>
 
-            {/* Email */}
-            <Text style={styles.fieldLabel}>EMAIL</Text>
+            <Text style={styles.fieldLabel}>Email</Text>
             <View style={styles.inputContainer}>
+              <MaterialIcons name="mail-outline" size={18} color="#16803C" />
               <TextInput
                 style={styles.input}
-                placeholder="john@velocity.pro"
-                placeholderTextColor="#40485d"
+                placeholder="name@example.com"
+                placeholderTextColor="#94A3B8"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -99,106 +105,154 @@ export default function SignupScreen({ navigation }) {
               />
             </View>
 
-            {/* Phone Number */}
-            <Text style={styles.fieldLabel}>PHONE NUMBER</Text>
+            <Text style={styles.fieldLabel}>Phone number</Text>
             <View style={styles.inputContainer}>
+              <MaterialIcons name="phone" size={18} color="#16803C" />
               <TextInput
                 style={styles.input}
-                placeholder="+1 (555) 000-0000"
-                placeholderTextColor="#40485d"
+                placeholder="10-digit mobile number"
+                placeholderTextColor="#94A3B8"
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
+                maxLength={10}
               />
             </View>
 
-            {/* Password */}
-            <Text style={styles.fieldLabel}>PASSWORD</Text>
+            <Text style={styles.fieldLabel}>Password</Text>
             <View style={styles.inputContainer}>
+              <MaterialIcons name="lock-outline" size={18} color="#16803C" />
               <TextInput
-                style={[styles.input, { flex: 1 }]}
-                placeholder="••••••••"
-                placeholderTextColor="#40485d"
+                style={styles.input}
+                placeholder="Minimum 6 characters"
+                placeholderTextColor="#94A3B8"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
               />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                <MaterialIcons name={showPassword ? "visibility" : "visibility-off"} size={20} color="#6d758c" />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon} activeOpacity={0.78}>
+                <MaterialIcons name={showPassword ? 'visibility' : 'visibility-off'} size={20} color="#64748B" />
               </TouchableOpacity>
             </View>
 
-            {/* Create Account Button */}
-            <TouchableOpacity style={styles.createButton} onPress={handleSignup} disabled={loading}>
+            <TouchableOpacity style={styles.createButton} onPress={handleSignup} disabled={loading} activeOpacity={0.88}>
               {loading ? (
-                <ActivityIndicator color="#060e20" />
+                <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.createButtonText}>Create Account</Text>
+                <>
+                  <Text style={styles.createButtonText}>Create account</Text>
+                  <MaterialIcons name="arrow-forward" size={18} color="#ffffff" />
+                </>
               )}
             </TouchableOpacity>
 
-            {/* Social Divider */}
-            <View style={styles.dividerContainer}>
+            <View style={styles.dividerRow}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>SOCIAL ENTRY</Text>
+              <Text style={styles.dividerText}>or</Text>
               <View style={styles.dividerLine} />
             </View>
 
-            {/* Social Login Button */}
-            <View style={styles.socialContainer}>
-              <TouchableOpacity style={styles.socialButton} onPress={handleGoogleSignup}>
-                <Text style={styles.googleIcon}>G</Text>
-                <Text style={styles.socialLabel}>GOOGLE</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={handleGoogleSignup}
+              disabled={googleLoading}
+              activeOpacity={0.86}
+            >
+              {googleLoading ? (
+                <ActivityIndicator color="#16803C" />
+              ) : (
+                <>
+                  <Text style={styles.googleMark}>G</Text>
+                  <Text style={styles.googleButtonText}>Sign up with Google</Text>
+                </>
+              )}
+            </TouchableOpacity>
           </View>
 
-          {/* Footer */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>
-              Already part of the network?  <Text style={styles.footerLink} onPress={() => navigation.navigate('Login')}>Login</Text>
+              Already have an account? <Text style={styles.footerLink} onPress={() => navigation.navigate('Login')}>Login</Text>
             </Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
-  scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40 },
-  topSection: { alignItems: 'center', marginTop: 60, marginBottom: 32 },
-  brandName: { fontSize: 13, fontWeight: 'bold', color: '#8b5cf6', letterSpacing: 3, marginBottom: 18 },
-  pageTitle: { fontSize: 32, fontWeight: '900', color: '#1e293b', marginBottom: 8 },
-  pageSubtitle: { fontSize: 14, color: '#64748b' },
-  formSection: { marginBottom: 20 },
-  fieldLabel: { fontSize: 10, fontWeight: 'bold', color: '#64748b', letterSpacing: 1.5, marginBottom: 8, marginTop: 12 },
-  inputContainer: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#f8fafc', borderRadius: 14, paddingHorizontal: 16, height: 54,
-    borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 4,
+  flex: { flex: 1 },
+  container: { flex: 1, backgroundColor: '#F6F8F4' },
+  scrollContent: { flexGrow: 1, paddingHorizontal: 16, paddingBottom: 42 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 22, paddingBottom: 18 },
+  backBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 8,
+    backgroundColor: '#E8F8DE',
+    borderWidth: 1,
+    borderColor: '#CDEFC0',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  input: { flex: 1, fontSize: 15, color: '#1e293b' },
+  headerCopy: { flex: 1 },
+  brandTitle: { fontSize: 26, fontWeight: '900', color: '#111827' },
+  brandSubtitle: { fontSize: 13, fontWeight: '700', color: '#64748B', marginTop: 3 },
+  formCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E5ECDC',
+  },
+  fieldLabel: { fontSize: 12, fontWeight: '900', color: '#334155', marginBottom: 8, marginTop: 8 },
+  inputContainer: {
+    height: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 8,
+    paddingHorizontal: 13,
+    borderWidth: 1,
+    borderColor: '#E4EADF',
+    marginBottom: 10,
+  },
+  input: { flex: 1, fontSize: 15, fontWeight: '700', color: '#111827' },
   eyeIcon: { padding: 4 },
   createButton: {
-    backgroundColor: '#8b5cf6', borderRadius: 16, height: 56,
-    alignItems: 'center', justifyContent: 'center', marginTop: 20, marginBottom: 24,
-    shadowColor: '#8b5cf6', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 16, elevation: 8,
+    height: 52,
+    borderRadius: 8,
+    backgroundColor: '#16803C',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 14,
+    shadowColor: '#166534',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.22,
+    shadowRadius: 14,
+    elevation: 10,
   },
-  createButtonText: { fontSize: 17, fontWeight: '700', color: '#ffffff' },
-  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#e2e8f0' },
-  dividerText: { fontSize: 10, fontWeight: 'bold', color: '#94a3b8', letterSpacing: 1.5, marginHorizontal: 12 },
-  socialContainer: { width: '100%' },
-  socialButton: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#ffffff', borderRadius: 14, height: 50, gap: 8,
-    borderWidth: 1, borderColor: '#e2e8f0',
+  createButtonText: { fontSize: 16, fontWeight: '900', color: '#ffffff' },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 16 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#E5ECDC' },
+  dividerText: { fontSize: 12, fontWeight: '900', color: '#94A3B8' },
+  googleButton: {
+    height: 50,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#E5ECDC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 10,
   },
-  googleIcon: { fontSize: 18, fontWeight: 'bold', color: '#f4c20d' },
-  socialLabel: { fontSize: 12, fontWeight: 'bold', color: '#1e293b', letterSpacing: 0.5 },
-  footer: { alignItems: 'center', marginTop: 28 },
-  footerText: { fontSize: 14, color: '#64748b' },
-  footerLink: { color: '#8b5cf6', fontWeight: '700' },
+  googleMark: { fontSize: 18, fontWeight: '900', color: '#EA4335' },
+  googleButtonText: { fontSize: 14, fontWeight: '900', color: '#111827' },
+  footer: { alignItems: 'center', marginTop: 24 },
+  footerText: { fontSize: 14, fontWeight: '700', color: '#64748B' },
+  footerLink: { color: '#16803C', fontWeight: '900' },
 });

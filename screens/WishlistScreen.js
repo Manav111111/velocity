@@ -22,7 +22,7 @@ export default function WishlistScreen({ navigation }) {
           </TouchableOpacity>
           <Text style={styles.headerBrand}>Velocity</Text>
           <TouchableOpacity style={styles.avatarBtn}>
-            <MaterialIcons name="notifications-none" size={20} color="#8b5cf6" />
+            <MaterialIcons name="notifications-none" size={20} color="#16803C" />
           </TouchableOpacity>
         </View>
 
@@ -38,7 +38,7 @@ export default function WishlistScreen({ navigation }) {
         {/* Empty State */}
         {wishlistItems.length === 0 && (
           <View style={styles.emptyState}>
-            <MaterialIcons name="favorite-border" size={60} color="#40485d" />
+            <MaterialIcons name="favorite-border" size={60} color="#64748B" />
             <Text style={styles.emptyTitle}>No saved items yet</Text>
             <Text style={styles.emptySubtitle}>Tap the heart icon on products to save them here.</Text>
           </View>
@@ -73,7 +73,7 @@ export default function WishlistScreen({ navigation }) {
               {/* Actions */}
               <View style={styles.actionsRow}>
                 <TouchableOpacity style={styles.addCartBtn} onPress={() => addToCart({ ...item, qty: 1 })}>
-                  <MaterialIcons name="shopping-cart" size={14} color="#8b5cf6" />
+                  <MaterialIcons name="shopping-cart" size={14} color="#16803C" />
                   <Text style={styles.addCartText}>Add to Cart</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.removeBtn} onPress={() => toggleWishlist(item)}>
@@ -122,14 +122,14 @@ const styles = StyleSheet.create({
   itemInfo: { padding: 16 },
   nameRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   itemName: { fontSize: 18, fontWeight: '800', color: '#1e293b', flex: 1, marginRight: 10 },
-  itemPrice: { fontSize: 18, fontWeight: '800', color: '#8b5cf6' },
+  itemPrice: { fontSize: 18, fontWeight: '800', color: '#16803C' },
   itemDesc: { fontSize: 13, color: '#64748b', lineHeight: 19, marginBottom: 14 },
   actionsRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   addCartBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
-    borderWidth: 1.5, borderColor: '#8b5cf6', borderRadius: 14, paddingVertical: 12,
+    borderWidth: 1.5, borderColor: '#16803C', borderRadius: 14, paddingVertical: 12,
   },
-  addCartText: { fontSize: 13, fontWeight: '700', color: '#8b5cf6' },
+  addCartText: { fontSize: 13, fontWeight: '700', color: '#16803C' },
   removeBtn: {
     width: 40, height: 40, borderRadius: 14,
     backgroundColor: '#fffcfc', alignItems: 'center', justifyContent: 'center',

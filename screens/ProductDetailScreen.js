@@ -76,7 +76,7 @@ export default function ProductDetailScreen({ navigation, route }) {
             <Text style={styles.headerBrand}>Velocity</Text>
           </View>
           <TouchableOpacity style={styles.headerRight} onPress={() => navigation.navigate('Home', { screen: 'CartTab' })}>
-            <MaterialIcons name="shopping-cart" size={18} color="#8b5cf6" />
+            <MaterialIcons name="shopping-cart" size={18} color="#16803C" />
             {cartItemCount > 0 && (
               <View style={styles.headerCartBadge}>
                 <Text style={styles.headerCartBadgeText}>{cartItemCount}</Text>
@@ -122,19 +122,19 @@ export default function ProductDetailScreen({ navigation, route }) {
         <View style={styles.titleRow}>
           <Text style={styles.productName}>{product.name}</Text>
           <TouchableOpacity onPress={() => toggleWishlist(product)}>
-            <MaterialIcons name={isFavorite ? 'favorite' : 'favorite-border'} size={28} color="#8b5cf6" />
+            <MaterialIcons name={isFavorite ? 'favorite' : 'favorite-border'} size={28} color="#16803C" />
           </TouchableOpacity>
         </View>
 
         {/* Rating & Delivery */}
         <View style={styles.metaRow}>
           <View style={styles.ratingBadge}>
-            <MaterialIcons name="star" size={14} color="#8b5cf6" />
+            <MaterialIcons name="star" size={14} color="#16803C" />
             <Text style={styles.ratingText}>{product.rating || '4.8'}</Text>
             <Text style={styles.reviewText}>({product.reviews || '—'} reviews)</Text>
           </View>
           <View style={styles.deliveryRow}>
-            <MaterialIcons name="bolt" size={16} color="#ff6e84" />
+            <MaterialIcons name="bolt" size={16} color="#DC2626" />
             <Text style={styles.deliveryText}>{product.delivery || '10 MINS DELIVERY'}</Text>
           </View>
         </View>
@@ -178,7 +178,7 @@ export default function ProductDetailScreen({ navigation, route }) {
               <MaterialIcons name="remove" size={18} color="#1e293b" />
             </TouchableOpacity>
             <Text style={styles.qtyValue}>{qty}</Text>
-            <TouchableOpacity onPress={() => setQty(qty + 1)} style={[styles.qtyBtn, { backgroundColor: '#8b5cf6' }]}>
+            <TouchableOpacity onPress={() => setQty(qty + 1)} style={[styles.qtyBtn, { backgroundColor: '#16803C' }]}>
               <MaterialIcons name="add" size={18} color="#ffffff" />
             </TouchableOpacity>
           </View>
@@ -237,7 +237,7 @@ export default function ProductDetailScreen({ navigation, route }) {
         {justAdded || inCartQty > 0 ? (
           <View style={styles.bottomRow}>
             <TouchableOpacity style={styles.addMoreBtn} onPress={handleAddToCart} disabled={isOutOfStock}>
-              <MaterialIcons name="add-shopping-cart" size={18} color="#8b5cf6" />
+              <MaterialIcons name="add-shopping-cart" size={18} color="#16803C" />
               <Text style={styles.addMoreText}>Add {qty} More</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.goToCartBtn} onPress={() => navigation.navigate('Home', { screen: 'CartTab' })}>
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   pairImagePlaceholder: { height: 100, width: '100%', overflow: 'hidden' },
   pairInfo: { padding: 12, paddingBottom: 16 },
   pairName: { fontSize: 14, fontWeight: '700', color: '#1e293b', marginBottom: 4 },
-  pairPrice: { fontSize: 13, color: '#8b5cf6', fontWeight: 'bold' },
+  pairPrice: { fontSize: 13, color: '#16803C', fontWeight: 'bold' },
 
   // Bottom bar
   bottomBar: {
@@ -384,16 +384,16 @@ const styles = StyleSheet.create({
   bottomRow: { flexDirection: 'row', gap: 12 },
   addMoreBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    borderWidth: 1.5, borderColor: '#8b5cf6', borderRadius: 25, height: 52,
+    borderWidth: 1.5, borderColor: '#16803C', borderRadius: 25, height: 52,
   },
-  addMoreText: { fontSize: 14, fontWeight: '700', color: '#8b5cf6' },
+  addMoreText: { fontSize: 14, fontWeight: '700', color: '#16803C' },
   goToCartBtn: {
-    flex: 1, backgroundColor: '#8b5cf6', borderRadius: 25, height: 52,
+    flex: 1, backgroundColor: '#16803C', borderRadius: 25, height: 52,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
   },
   goToCartText: { fontSize: 14, fontWeight: '800', color: '#ffffff' },
   addToCartBtn: {
-    backgroundColor: '#8b5cf6', borderRadius: 25, height: 56,
+    backgroundColor: '#16803C', borderRadius: 25, height: 56,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12,
   },
   addToCartText: { fontSize: 16, fontWeight: '800', color: '#ffffff' },

@@ -41,13 +41,13 @@ export default function SplashScreen({ navigation }) {
       <View style={styles.content}>
         <View style={styles.iconContainer}>
           <View style={styles.iconBox}>
-            <MaterialIcons name="bolt" size={60} color="#8b5cf6" />
+            <MaterialIcons name="shopping-bag" size={54} color="#16803C" />
           </View>
         </View>
         <Text style={styles.title}>
-          Velocity<Text style={styles.titlePro}>Pro</Text>
+          Velocity
         </Text>
-        <Text style={styles.subtitle}>ULTIMATE DELIVERY INFRASTRUCTURE</Text>
+        <Text style={styles.subtitle}>FRESH GROCERIES DELIVERED FAST</Text>
       </View>
       <View style={styles.footer}>
         <View style={styles.statusContainer}>
@@ -66,19 +66,19 @@ export default function SplashScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  glowLayer1: { position: 'absolute', width: width * 1.5, height: width * 1.5, backgroundColor: 'rgba(139,92,246,0.02)', borderRadius: 999, top: height / 2 - (width * 1.5) / 2, left: width / 2 - (width * 1.5) / 2 },
-  glowLayer2: { position: 'absolute', width: width * 0.8, height: width * 0.8, backgroundColor: 'rgba(139,92,246,0.03)', borderRadius: 999, top: height / 2 - (width * 0.8) / 2, left: width / 2 - (width * 0.8) / 2 },
+  container: { flex: 1, backgroundColor: '#F6F8F4', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  glowLayer1: { position: 'absolute', width: width * 1.5, height: width * 1.5, backgroundColor: 'rgba(22,128,60,0.04)', borderRadius: 999, top: height / 2 - (width * 1.5) / 2, left: width / 2 - (width * 1.5) / 2 },
+  glowLayer2: { position: 'absolute', width: width * 0.8, height: width * 0.8, backgroundColor: 'rgba(22,128,60,0.06)', borderRadius: 999, top: height / 2 - (width * 0.8) / 2, left: width / 2 - (width * 0.8) / 2 },
   content: { alignItems: 'center', marginBottom: 100, zIndex: 10 },
-  iconContainer: { marginBottom: 32, shadowColor: '#8b5cf6', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 10 },
-  iconBox: { width: 120, height: 120, backgroundColor: '#f1f5f9', borderRadius: 32, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e2e8f0' },
-  title: { fontSize: 48, fontWeight: '900', color: '#1e293b', letterSpacing: -1.5, marginBottom: 8 },
-  titlePro: { color: '#8b5cf6' },
-  subtitle: { fontSize: 10, fontWeight: 'bold', color: '#64748b', letterSpacing: 2 },
+  iconContainer: { marginBottom: 32, shadowColor: '#166534', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 10 },
+  iconBox: { width: 118, height: 118, backgroundColor: '#E8F8DE', borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#CDEFC0' },
+  title: { fontSize: 48, fontWeight: '900', color: '#111827', letterSpacing: 0, marginBottom: 8 },
+  titlePro: { color: '#16803C' },
+  subtitle: { fontSize: 10, fontWeight: '900', color: '#64748B', letterSpacing: 1.4 },
   footer: { position: 'absolute', bottom: 90, width: '100%', alignItems: 'center', paddingHorizontal: 40 },
   statusContainer: { flexDirection: 'row', alignItems: 'center' },
   pulseContainer: { width: 16, height: 16, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
-  pulseDot: { width: 8, height: 8, backgroundColor: '#8b5cf6', borderRadius: 4, position: 'absolute', zIndex: 2 },
-  pulseRing: { width: 16, height: 16, backgroundColor: '#8b5cf6', borderRadius: 8, position: 'absolute', zIndex: 1 },
-  statusText: { fontSize: 12, fontWeight: 'bold', color: '#64748b', letterSpacing: 1.5 },
+  pulseDot: { width: 8, height: 8, backgroundColor: '#16803C', borderRadius: 4, position: 'absolute', zIndex: 2 },
+  pulseRing: { width: 16, height: 16, backgroundColor: '#16803C', borderRadius: 8, position: 'absolute', zIndex: 1 },
+  statusText: { fontSize: 12, fontWeight: '900', color: '#64748B', letterSpacing: 1.2 },
 });
